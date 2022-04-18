@@ -1,0 +1,6 @@
+# Select Field constants
+SELECT_FIELD_SERIALIZER_VALUE = 'value'
+SELECT_FIELD_SERIALIZER_LABEL = 'label'
+SELECT_FIELD_SERIALIZER_ICON_URL = 'icon_url'
+
+

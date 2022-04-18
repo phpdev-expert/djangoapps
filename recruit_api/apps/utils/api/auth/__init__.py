@@ -1,0 +1,1 @@
+from .recruit import RecruitAuthentication

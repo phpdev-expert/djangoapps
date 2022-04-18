@@ -1,0 +1,38 @@
+{
+  "name": "HelloHostess",
+  "version": "0.0.0.3",
+  "description": "How To Save Time Managing The Admin Side Of Running A Facebook Group So You Can Avoid Letting A New Member Fall Through The Cracks And Miss Being Welcomed Into The Community",
+  "icons": {
+      "128": "images/hellohostess-icon.png"
+   },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "browser_action": {
+      "default_title": "Hellohostess",
+      "default_icon": "images/hellohostess-icon.png",
+      "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["js/background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+        {
+        "matches": ["*://*.facebook.com/groups*"],
+        "css": [ "css/sweetalert2.css", "css/main.css" ],
+        "js": ["js/jquery.js","js/content.js"],
+        "run_at": "document_end",
+        "all_frames": true
+      },
+      {
+      "matches": ["*://d.facebook.com/*"],
+      "js": ["js/jquery.js","js/d.js"],
+      "run_at": "document_end",
+      "all_frames": true
+      }
+      ],
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
+}

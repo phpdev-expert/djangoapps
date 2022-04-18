@@ -1,0 +1,407 @@
+
+         <div class="schedule">
+           {% for d in details.alldays %}
+             <div class="date-item">
+                 <div class="date"> {{d.day|date:"d.m.Y | l "}}</div>
+               <div class="activities-list">
+                 {% if forloop.first %}
+                 {% ifequal travel_by "car" %}
+                 {% if details.mycars %}
+                 {% for flight in details.mycars %}
+                   {% if forloop.first %}
+                 <div class="activity-item activity-item_static active_flight">
+                     <div class="activity-item-inner">
+                         <div class="activity-image" style="background-image: url('{{details.city.imageurl}}');"></div>
+                         <div class="activity-info" data-flight="{{flight}}">
+                             <div class="activity-title">{{origin}} - {{details.city.city}}  by car</div>
+                             <div class="activity-price">$ <span class="peicess">{{flight.price}}</span> via {{flight.name}} </div>
+                             <div class="activity-links"><a href="#" class="moreinfo">more info</a> | <a href="#" class="otheroptions">other options</a></div>
+                         </div>
+                         <div class="activity-controls">
+                             <div class="activity-check"><input class="booking-class" type="checkbox" checked id="l1"><label for="l1" class="booking-class"></label></div>
+                             <div class="activity-move fonticon-bars"></div>
+                         </div>
+                     </div>
+                     <div class="activity-infotext">
+                       <div><b>Car Name:</b> {{flight.name}}</div>
+                       <div><b>Price:$</b> {{flight.price}}</div>
+                        <div><b>Distance:</b> {{details.car_distance}}</div>
+                        <div><b>Duration:</b> {{details.car_duration}}</div>
+                        <div><b>Seats:</b> {{flight.capacity.seats}} </div>
+
+                          <br><br>
+                     </div>
+                 </div><!-- activity-item  -->
+
+                   {% endif %}
+                 {% endfor %}
+                  <div class="additional-activities">
+                     {% for flight in details.mycars %}
+                     <div class="activity-item" >
+                         <div class="activity-item-inner">
+                             <div class="activity-image" style="background-image: url('{{details.city.imageurl}}');"></div>
+                             <div class="activity-info" data-flight="{{flight}}">
+                                 <div class="activity-title">{{origin}} - {{details.city.city}}  by car </div>
+                                 <div class="activity-price">$<span class="peicess">{{flight.price}} </span> via {{flight.name}}</div>
+                                 <div class="activity-links"><a href="#" class="moreinfo">more info</a> | <a href="#" class="otheroptions">other options</a>
+                                 </div>
+                             </div>
+                             <div class="activity-controls">
+                                 <div class="activity-check"><input class="booking-class" type="checkbox" id="l1add1"><label class="booking-class" for="l1add1"></label></div>
+                                 <div class="activity-move fonticon-bars"></div>
+                             </div>
+                         </div>
+                         <div class="activity-infotext">
+                           <div><b>Car Name:</b> {{flight.name}}</div>
+                           <div><b>Price:$</b> {{flight.price}}</div>
+                            <div><b>Distance:$</b> {{details.car_distance}}</div>
+                            <div><b>Duration:$</b> {{details.car_duration}}</div>
+                            <div><b>Seats:</b> {{flight.capacity.seats}} </div>
+                            <br><br>
+                         </div>
+                     </div>
+                 <!-- additional-activities -->
+               {% endfor %}
+               </div>
+                 {% else %}
+                 <div class="activity-item activity-item_static active_flight">
+                     <div class="activity-item-inner">
+                         <div class="activity-image" style="background-image: url('{{details.city.imageurl}}');"></div>
+                         <div class="activity-info">
+                             <div class="activity-title">{{origin}} - {{details.city.city}}  by car</div>
+                             <div class="activity-price">Time<span class="peicess-c"> {{details.car_duration}}</div>
+                             <div class="activity-price">Distance<span class="peicess-c"> {{details.car_distance}} KM </div>
+                             <div class="activity-price">$ <span class="peicess">{{details.car_price}}</span>  </div>
+                         </div>
+                         <div class="activity-controls">
+                             <div class="activity-check"><input class="booking-class" type="checkbox" checked id="l1"><label for="l1" class="booking-class"></label></div>
+                             <div class="activity-move fonticon-bars"></div>
+                         </div>
+                     </div>
+                 </div><!-- activity-item  -->
+                 {% endif %}
+                 {% endifequal %}
+                 {% for flight in details.data %}
+                   {% if forloop.first %}
+                 <div class="activity-item activity-item_static active_flight">
+                     <div class="activity-item-inner">
+                         <div class="activity-image" style="background-image: url('{{details.city.imageurl}}');"></div>
+                         <div class="activity-info" data-flight="{{flight}}">
+                             <div class="activity-title">Arrival to {{details.city.city}}</div>
+                             <div class="activity-price">$ <span class="peicess">{{flight.price}}</span> via {{flight.airline_c}} </div>
+                             <div class="activity-links"><a href="#" class="moreinfo">more info</a> | <a href="#" class="otheroptions">other options</a></div>
+                         </div>
+                         <div class="activity-controls">
+                             <div class="activity-check"><input class="booking-class" type="checkbox" checked id="l1"><label for="l1" class="booking-class"></label></div>
+                             <div class="activity-move fonticon-bars"></div>
+                         </div>
+                     </div>
+                     <div class="activity-infotext">
+                       <div><b>Provider:</b> {{flight.airline_c}}</div>
+                       <div><b>Price:$</b> {{flight.price}}</div>
+                        {%for segments in flight.itineraries.0.segments %}
+                         <b> Departure  </b>  {{segments.departure_loc}} at {{segments.departure.at}} <br>
+                         <b> Arival   </b>  {{segments.arrival_loc}} on {{segments.arrival.at}}<br>
+                         <b> Carrier </b>{{segments.carrierCode}}<br>
+                         <b> Aircraft </b> {{segments.aircraft}}<br>
+                          <br><br>
+                        {%endfor%}
+                     </div>
+                 </div><!-- activity-item  -->
+
+                   {% endif %}
+                 {% endfor %}
+                  <div class="additional-activities">
+                     {% for flight in details.fdata %}
+                     <div class="activity-item" >
+                         <div class="activity-item-inner">
+                             <div class="activity-image" style="background-image: url('{{details.city.imageurl}}');"></div>
+                             <div class="activity-info" data-flight="{{flight}}">
+                                 <div class="activity-title">{{flight.id}} Arrival to {{details.city.city}} </div>
+                                 <div class="activity-price">$<span class="peicess">{{flight.price}}</span> via {{flight.airline_c}}</div>
+                                 <div class="activity-links"><a href="#" class="moreinfo">more info</a> | <a href="#" class="otheroptions">other options</a>
+                                 </div>
+                             </div>
+                             <div class="activity-controls">
+                                 <div class="activity-check"><input class="booking-class" type="checkbox" id="l1add1"><label class="booking-class" for="l1add1"></label></div>
+                                 <div class="activity-move fonticon-bars"></div>
+                             </div>
+                         </div>
+                         <div class="activity-infotext">
+                           <div><b>Provider:</b> {{flight.airline_c}}</div>
+                           <div><b>Price:$</b> {{flight.price}}</div>
+                           {%for segments in flight.itineraries.0.segments %}
+                           <b> Departure  </b>  {{segments.departure_loc}} at {{segments.departure.at}} <br>
+                           <b> Arival   </b>  {{segments.arrival_loc}} on {{segments.arrival.at}}<br>
+                            <b> Carrier </b>{{segments.carrierCode}}<br>
+                            <b> Aircraft </b> {{segments.aircraft}}<br>
+                            <br><br>
+                           {%endfor%}
+                         </div>
+                     </div>
+                 <!-- additional-activities -->
+               {% endfor %}
+                  </div>
+                 {% for hotels in details.city_hotels %}
+                     {% if forloop.first %}
+                   <div class="activity-item activity-item_static active_hotel">
+                       <div class="activity-item-inner ">
+                           <div class="activity-image" style="background-image: url('{{hotels.media.0.uri}}');"></div>
+                           <div class="activity-info hotesl-activity" data-hotel="{{hotels}}">
+                               <div class="activity-title">{{hotels.name}}</div>
+                               <div class="activity-price">$ <span data-hotel="{{hotels.hotelId}}" class="hpeicess">{{hotels.price}}</span>  via Tripadvisor.com</div>
+                               <div class="activity-links"><a href="#" class="moreinfo">more info</a> | <a href="#" class="otheroptions">other options</a></div>
+                           </div>
+                           <div class="activity-controls">
+                               <div class="activity-check"><input  class="booking-classH" type="checkbox" checked id="l2"><label for="l2" class="booking-classH"></label></div>
+                               <div class="activity-move fonticon-bars"></div>
+                           </div>
+                       </div>
+                       <div class="activity-infotext">
+                         <div><b>Name:</b> {{hotels.name}}</div>
+                         <div><b>Location: </b>{{hotels.address.lines.0}}, {{hotels.address.cityName}}, {{hotels.address.postalCode}}</div>
+                         <div><b>Star:</b> {{hotels.rating}}</div>
+                         <h3> Offers</h3>
+                         {% for offer in hotels.offers  %}
+                             <div class="hoffers"  data-link="{{offer.id}}">
+                               <b>${{offer.price.total}}</b>
+                               <div style="max-width:400px;">{{offer.room.description.text}}:</div>
+                             </div>
+                         {% endfor %}
+                       </div>
+                   </div><!-- activity-item  -->
+                     <div class="additional-activities">
+                   {% endif %}
+                       <div class="activity-item">
+                           <div class="activity-item-inner">
+                               <div class="activity-image" style="background-image: url('{{hotels.media.0.uri}}');"></div>
+                               <div class="activity-info hotesl-activity" data-hotel="{{hotels}}">
+                                   <div class="activity-title">{{hotels.name}}</div>
+                                   <div class="activity-price">$<span data-hotel="{{hotels.hotelId}}" class="hpeicess"> {{hotels.price}} </span> via Tripadvisor.com</div>
+                                   <div class="activity-links"><a href="#" class="moreinfo">more info</a></div>
+                               </div>
+                               <div class="activity-controls">
+                                   <div class="activity-check"><input class="booking-classH" type="checkbox" id="l2add1"><label for="l2add1" class="booking-classH"></label></div>
+                                   <div class="activity-move fonticon-bars"></div>
+                               </div>
+                           </div>
+                           <div class="activity-infotext">
+                             <div><b>Name:</b> {{hotels.name}}</div>
+                             <div><b>Location: </b>{{hotels.address.lines}}, {{hotels.address.cityName}}, {{hotels.address.postalCode}}</div>
+                             <div><b>Star:</b> {{hotels.rating}}</div>
+                             <h3> Offers</h3>
+                             {% for offer in hotels.offers  %}
+                                 <div class="hoffers" data-link="{{offer.id}}">
+                                   <b>${{offer.price.total}}</b>
+                                   <div style="max-width:400px;">{{offer.room.description.text}}:</div>
+                                 </div>
+                             {% endfor %}
+                           </div>
+                       </div>
+                 {% endfor %}
+                   </div><!-- additional-activities -->
+                 {% endif %}
+                 {% for attr in d.atr %}
+                 {% if attr.isparent %}
+                 <div class="activity-item attraction1 parent" style="padding: 10px 2px; background: #e6dede;  border-radius: 20px;">
+                   <div class="activity-item-inner">
+                       <div class="activity-image" style="background-image: url('{{attr.image1.url}}');"></div>
+                       <div class="activity-info">
+                           <div class="activity-title">{{attr.name}}</div>
+                           <div data-price="{{attr.price}}" class="activity-price">{{attr.price}}</div>
+                           <div class="activity-links"><a href="#" class="moreinfo">more info</a>
+                             | <a href="#" class="otheroptions">other options</a>
+                           </div>
+                       </div>
+                       <div class="activity-controls">
+                           <div class="activity-check"></div>
+                           <div class="activity-move fonticon-bars"></div>
+                       </div>
+                   </div>
+                   <div class="activity-infotext" style="height:500px;overflow:auto;">
+                     {%for attrch in attr.childs %}
+                      <div class="activity-item attraction1" >
+                       <div class="activity-item-inner">
+                           <div class="activity-image" style="background-image: url('{{attrch.image1.url}}');"></div>
+                           <div class="activity-info">
+                               <div class="activity-title">{{attrch.name}}</div>
+                               <div data-price="{{attr.price}}" class="activity-price">{{attrch.price}}</div>
+                               <div class="activity-links"><a href="#" class="moreinfo">more info</a>
+                                 | <a href="#" class="otheroptions">other options</a>
+                               </div>
+                           </div>
+                           <div class="activity-controls">
+                               <div class="activity-check"><input type="checkbox" checked id="l3"><label for="l3"></label></div>
+                               <div class="activity-move fonticon-bars"></div>
+                           </div>
+                       </div>
+                       <div class="activity-infotext" style="display:none">
+                         <div><b>Address:</b> {{attrch.address}}</div>
+                         <div><b>Rating: </b>{{attrch.rating}}</div>
+                         <div><b>Total Review:</b> {{attrch.amount_reviews}}</div>
+                         <div><b>Open Hours :</b> {{attrch.working_hours}}</div>
+                         <div><b>Time :</b> {{attrch.recommended_time_range}}</div>
+                         <div><b>Fun Score :</b> {{attrch.fun_score}}</div>
+                         <div><b>Description :</b>
+                           {% if attrch.description.text %}
+                            {{attrch.description.text|safe}}
+                           {%else%}
+                           {{attrch.description|safe}}
+                           {% endif %}
+                         </div>
+                         <div><b>Category:</b>{{attr.category.attraction_category.name}} </div>
+                       </div>
+                      </div><!-- activity-item  -->
+                     {% endfor %}
+                   </div>
+               </div><!-- activity-item  -->
+                {%else%}
+                <div class="activity-item attraction1" >
+                  <div class="activity-item-inner">
+                      <div class="activity-image" style="background-image: url('{{attr.image1.url}}');"></div>
+                      <div class="activity-info">
+                          <div class="activity-title">{{attr.name}}</div>
+                          <div data-price="{{attr.price}}" class="activity-price">{{attr.price}}</div>
+                          <div class="activity-links"><a href="#" class="moreinfo">more info</a>
+                            | <a href="#" class="otheroptions">other options</a>
+                          </div>
+                      </div>
+                      <div class="activity-controls">
+                          <div class="activity-check"><input type="checkbox" checked id="l3"><label for="l3"></label></div>
+                          <div class="activity-move fonticon-bars"></div>
+                      </div>
+                  </div>
+                  <div class="activity-infotext">
+                    <div><b>Address:</b> {{attr.address}}</div>
+                    <div><b>Rating: </b>{{attr.rating}}</div>
+                    <div><b>Total Review:</b> {{attr.amount_reviews}}</div>
+                    <div><b>Open Hours :</b> {{attr.working_hours}}</div>
+                    <div><b>Time :</b> {{attr.recommended_time_range}}</div>
+                    <div><b>Fun Score :</b> {{attr.fun_score}}</div>
+                    <div><b>Description :</b>
+                      {% if attr.description.text %}
+                       {{attr.description.text|safe}}
+                      {%else%}
+                      {{attr.description|safe}}
+                      {% endif %}
+                    </div>
+                    <div><b>Category:</b>{{attr.category.attraction_category.name}} </div>
+                  </div>
+              </div><!-- activity-item  -->
+                {%endif%}
+
+                 {% endfor %}
+                 {% if forloop.last %}
+                 {% for flight in details.data %}
+                   {% if forloop.first %}
+                 <div class="activity-item activity-item_static">
+                     <div class="activity-item-inner">
+                         <div class="activity-image" style="background-image: url('{{details.city.imageurl}}');"></div>
+                         <div class="activity-info">
+                             <div class="activity-title">Departure from {{details.city.city}}</div>
+                             <div class="activity-price">${{flight.price}} via {{flight.providers.n}} </div>
+                             <div class="activity-links"><a href="#" class="moreinfo">more info</a> | <a href="#" class="otheroptions">other options</a></div>
+                         </div>
+                         <div class="activity-controls">
+                             <div class="activity-check"><input type="checkbox" checked id="l1"><label for="l1"></label></div>
+                             <div class="activity-move fonticon-bars"></div>
+                         </div>
+                     </div>
+                     <div class="activity-infotext">
+                       <div><b>Provider:</b> {{flight.providers.n}}</div>
+                       <div><b>Price:$</b> {{flight.price}}</div>
+                       {%for segments in flight.itineraries.1.segments %}
+                       <b> Departure  </b>  {{segments.departure_loc}} at {{segments.departure.at}} <br>
+                       <b> Arival   </b>  {{segments.arrival_loc}} on {{segments.arrival.at}}<br>
+
+                        <b> Carrier </b>{{segments.carrierCode}}<br>
+                        <b> Aircraft <b> {{segments.aircraft}}<br>
+                        <br> </br>
+                       {%endfor%}
+                     </div>
+                 </div><!-- activity-item  -->
+                 <div class="additional-activities">
+                   {% endif %}
+                 {% endfor %}
+                     {% for flight in details.fdata %}
+                     <div class="activity-item" >
+                         <div class="activity-item-inner">
+                             <div class="activity-image" style="background-image: url('{{details.city.imageurl}}');"></div>
+                             <div class="activity-info">
+                                 <div class="activity-title"> Departure from {{details.city.city}} </div>
+                                 <div class="activity-price">${{flight.price}} via {{flight.airline_c}}</div>
+                                 <div class="activity-links"><a href="#" class="moreinfo">more info</a>
+                                   | <a href="#" class="otheroptions">other options</a>
+                                 </div>
+                             </div>
+                             <div class="activity-controls">
+                                 <div class="activity-check"><input type="checkbox" id="l1add1"><label for="l1add1"></label></div>
+                                 <div class="activity-move fonticon-bars"></div>
+                             </div>
+                         </div>
+                         <div class="activity-infotext">
+                           <div><b>Provider:</b> {{flight.airline_c}}</div>
+                           <div><b>Price:$</b> {{flight.price}}</div>
+                           {%for segments in flight.itineraries.1.segments %}
+                           <b> Departure  </b>  {{segments.departure_loc}} at {{segments.departure.at}} <br>
+                           <b> Arival   </b>  {{segments.arrival_loc}} on {{segments.arrival.at}}<br>
+                            <b> Carrier </b>{{segments.carrierCode}}<br>
+                            <b> Aircraft <b> {{segments.aircraft}}<br>
+                            <br> <br>
+                           {%endfor%}
+                         </div>
+                 <!-- additional-activities -->
+               {% endfor %}
+             </div>
+                  </div>
+               {% endif %}
+
+              </div>
+            </div>
+              <div class="sightseeing-wrapper">
+                  <div class="sightseeing-buttons">
+                      <a href="#" class="sightseeingoptions sightseeingoptions-more">more sightseeing options</a>
+                      <span>|</span>
+                      <a href="#" class="sightseeingoptions sightseeingoptions-less">less sightseeing options</a>
+                  </div>
+                  <div class="sightseeing-activities additional-activities">
+                    {% for attr in details.other_shiting %}
+                    <div class="activity-item">
+                        <div class="activity-item-inner">
+                            <div class="activity-image" style="background-image: url('{{attr.0.image1.url}}');"></div>
+                            <div class="activity-info">
+                                <div class="activity-title">{{attr.0.name}}</div>
+                                <div data-price="{{attr.price}}" class="activity-price">{{attr.0.price}}</div>
+
+                                <div class="activity-links"><a href="#" class="moreinfo">more info</a></div>
+                            </div>
+                            <div class="activity-controls">
+                                <div class="activity-check"><input type="checkbox"  id="l4"><label for="l4"></label></div>
+                                <div class="activity-move fonticon-bars"></div>
+                            </div>
+                        </div>
+                        <div class="activity-infotext">
+                           <div><b>Address:</b> {{attr.0.address}}</div>
+                           <div><b>Rating: </b>{{attr.0.rating}}</div>
+                           <div><b>Total Review:</b> {{attr.0.amount_reviews}}</div>
+                           <div><b>Open Hours :</b> {{attr.0.working_hours}}</div>
+                           <div><b>Time :</b> {{attr.0.recommended_time_range}}</div>
+                           <div><b>Fun Score :</b> {{attr.0.fun_score}}</div>
+                            <div><b>Description :</b>
+
+                              {% if attr.description.text %}
+                               {{attr.description.text|safe}}
+                              {%else%}
+                              {{attr.description|safe}}
+                              {% endif %}
+
+                            </div>
+                           <div><b>Category  :</b>  {{attr.category.attraction_category.name}} </div>
+                        </div>
+                    </div><!-- activity-item  -->
+                    {% endfor %}
+                  </div><!-- additional-activities -->
+              </div><!-- sightseeing-wrapper -->
+
+            {% endfor %}
+         </div>

@@ -1,0 +1,1 @@
+INSERT INTO `users` ( `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `is_admin`, `active`) VALUES ('Deepa Bisht', 'vknegi@gmail.com',now(), '$2y$10/3bM6bSI/1iK6XIagjeCO7MUst0NBLxKOM1ue7vcQKCwdFJZ8b.O', NULL,now(),now(), '0', '1')
