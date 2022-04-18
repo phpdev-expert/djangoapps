@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% block meta_title %} Submission by deadline {% endblock %}
+{% block title %}{% trans " Submission by deadline" %}{% endblock %}
+{% block breadcrumb_menu %}
+<li class="active">{% trans "Home" %}</li>
+{% endblock %}
+{% block main %}
+<script type="text/javascript">
+  var load=0
+</script>
+
+<div class="modal fade" id="modal-help">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <object  type="application/pdf" data="{% static "pdf/sub_by_deadline.pdf" %}" width="100%" height="500" style="height: 85vh;">
+         <a target="_blank" href="{% static "pdf/sub_by_deadline.pdf" %}"> Click here to open </a>
+      </object >
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="row">
+  <div class="col-md-10" >
+    <div class="headertitle" style="backgroud:#FE9E00;border:1px solid #fff;color:#fff">
+        Submission by deadline
+   </div>
+   </div>
+   <div class="col-md-2">
+        <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-help"> Help &nbsp;<i class="fa fa-question-circle"> </i></button>
+ </div>
+</div>
+
+<div class="col-md-12">
+  <div class="row">
+    <div class="col-md-12">
+    <div class="pull-left" style="margin-left: 10px">
+      <input id="sstart_date"  name="" placeholder="start date" type="text"> &nbsp;
+      <input id="send_date"  name="" placeholder="end date" type="text"> &nbsp;
+      <button type="button" name="button" class="btn btn-primary" onclick="doSearch()"> GO</button>
+      <button type="button" name="button" class="btn btn-primary" onclick="clearSearch()">
+        <i class="fa fa-times-circle" style="color:red;cursor:pointer"> </i>
+      </button>
+      </div>
+    <div class="pull-right" style="margin-right: 10px">
+      <input  id="s_search" type="search" name="" value="{{search}}">
+      <button type="button" name="button" class="btn btn-primary" onclick="doSearch()"> SEARCH</button>
+      <button type="button" name="button" class="btn btn-primary" onclick="clearSearch()">
+        <i class="fa fa-times-circle" style="color:red;cursor:pointer"> </i>
+        CLEAR
+      </button>
+      </div>
+    </div>
+  </div>
+    <div class="module">
+        <div class="row">
+          <div class=" col-md-12">
+            <div class="col-md-2 lh" style="width: 13.5%;">
+                    AI
+            </div>
+            <div class="col-md-3 lh">
+                AI Name
+            </div>
+        </div>
+        </div>
+        <div class="row mtop">
+          <div class=" col-md-12">
+          <div class="col-md-2" style="width: 13.5%;">
+
+          </div>
+
+          <div class="col-md-3 lh">
+                  Upload result
+          </div>
+
+          <div class="col-md-3 lh">
+                  Validation result
+          </div>
+
+          <div class="col-md-3 lh">
+                  Import result
+          </div>
+          </div>
+        </div>
+        {% for ai in ais %}
+        <div class="row outer">
+              <div class="col-md-2 lh" style="width: 13.5%;">
+                      {{ai.ai_code}}
+              </div>
+
+              <div class="col-md-3 lh">
+                      {{ai.ai_name}}
+              </div>
+            </div>
+            <div clss="row">
+              {% for dt in ai.email %}
+            <div class="col-md-12 mtop">
+              <div style="width: 13.5%;" class="col-md-2 lh clickonload" onclick="showInnerData(this)" data-return_type='{{dt.return_type}}' data-date='{{dt.deadline|date:"Y-m-d"}}' data-ai_code="{{ai.ai_code}}">
+                      {{dt.deadline|date:"Y-m-d"}}
+              </div>
+
+              <div  class="col-md-1 lh">
+                      {{dt.return_type}}
+              </div>
+
+              <div class="col-md-3">
+                <div class="col-md-6 cmni gh">{{dt.created_by.0.tot_csv_rows}}</div>
+                <div class="col-md-3 cmni btn-danger">{{dt.created_by.0.staging_failed}}</div>
+                <div class="col-md-3 cmni btn-success">{{dt.created_by.0.staging_rows}}</div>
+              </div>
+              <div class="col-md-3">
+                <div class="col-md-4 cmni btn-danger">{{dt.created_by.0.staging_error}}</div>
+
+                <div class="col-md-4 cmni btn-warning">{{dt.created_by.0.staging_warn}}</div>
+
+                <div class="col-md-4 cmni btn-success">{{dt.created_by.0.staging_good}}</div>
+
+              </div>
+              <div class="col-md-3">
+                <div class="col-md-6 cmni btn-warning">{{dt.created_by.0.gdr_warn}}</div>
+                <div class="col-md-6 cmni btn-success">{{dt.created_by.0.gdr_good}}</div>
+              </div>
+
+            </div>
+            <div class="row  mtop data-inner">
+
+            </div>
+            {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+<!--div class="text-center" style="margin-top: 10px;">
+  <button type="button" name="button" class="btn btn-success" onclick="getMoreSubs()"> Load More</button>
+</div -->
+
+<div class="col-md-12">
+  <div class="pull-right">
+    {% if page > 1 %}
+    <a href="#" onclick="goPrev();return false;" class="previous btn btn-success">&laquo; Previous</a>
+    {% endif %}
+    {% ifequal lent '20' %}
+    <a href="#" onclick="goNext();return false;" class="next btn btn-success">Next &raquo;</a>
+    {% endifequal %}
+  </div>
+</div>
+
+<div class="col-md-12 mtop2">
+</div>
+
+</div>
+<style media="screen">
+  .mtop {
+    margin-top: 5px;
+  }
+  .return,.subt{
+    padding: 8px 30px
+  }
+  .cmni:empty{
+    height:32px;
+  }
+
+  .cmni:empty:after{
+    content:'null'
+  }
+</style>
+<script>
+
+  var page=parseInt('{{page}}')
+
+    function doSearch(){
+          var serach=$("#s_search").val()
+          var start_date=$("#sstart_date").val()
+          var end_date=$("#send_date").val()
+          window.location.href='/deadlinesubs/?search='+serach+'&start_date='+start_date+'&end_date='+end_date+'&page='+page
+    }
+
+    function clearSearch(){
+      window.location.href='/deadlinesubs/';
+    }
+    function showInnerData(th){
+     var dd_date=$(th).data('date')
+     var ai_code=$(th).data('ai_code')
+     var return_type=$(th).data('return_type')
+
+     var ht='';
+
+     var loader='<div class="lds-css ng-scope">'+
+     '<div class="lds-spinner" style="width:100%;height:100%"><div></div><div></div><div></div><div>'+
+     '</div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>';
+     $(th).parent().next().html(loader);
+      $.ajax({
+           url:'/deadlinemore/?date='+dd_date+'&ai_code='+ai_code+'&return_type='+return_type,
+           success:function(data){
+             var jsn= JSON.parse(data);
+             $.each(jsn, function(i, sub){
+            ht=ht+ '<div class="col-md-12 mtop">'+
+'                <div class="col-md-2" style="width: 13.5%;">'+
+'                  <div class="col-md-6">'+
+'                  <span class="return gh">'+sub.return_name+'</span>'+
+'                  </div>'+
+'                  <div class="col-md-6">'+
+'                  <span class="subt lh"> '+sub.submission_type+' </span>'+
+'                  </div>'+
+'                 </div>'+
+'                 <div class="col-md-1" style="width:150px">'+
+''+
+'                 </div>'+
+'                 <div class="col-md-3 lh">'+sub.zip_file_name+
+'                 </div>'+
+''+
+'                 <div class="col-md-3 lh">'+sub.job_uuid+
+'                 </div>'+
+'                 <div class="col-md-3 lh">'+sub.position_date+
+'                 </div>'+
+'               </div>'+
+'               <div class="mtop col-md-12">'+
+'                <div class="col-md-2">'+
+'                 </div>'+
+'                 <div class="col-md-1" style="width:85px">'+
+'                   <i class="fa fa-play" style="font-size: 22px;cursor:pointer"'+
+''+
+'                   data-ai_code="'+sub.ai_code+'"'+
+'                   data-return_name="'+sub.return_name+'"'+
+'                   data-position_date="'+sub.position_date+'"'+
+'                   data-submission_type="'+sub.submission_type+'"'+
+'                   data-zip_file_name="'+sub.zip_file_name+'"'+
+'                   data-job_uuid="'+sub.job_uuid+'"'+
+''+
+'                   onclick="showDetails(this)"> </i>'+
+'                   <i class="fa fa-sort-desc" style="font-size: 40px;cursor:pointer;display:none" onclick="hideDetails(this)"> </i>'+
+''+
+'                  </div>'+
+'                 <div class="col-md-3">'+
+'                   <div class="col-md-6 cmni gh">'+sub.tot_csv_rows+
+'                   </div>'+
+'                   <div class="col-md-3 cmni btn-danger">'+sub.staging_failed+
+'                   </div>'+
+'                   <div class="col-md-3 cmni btn-success">'+sub.staging_rows+
+'                   </div>'+
+'                 </div>'+
+'                 <div class="col-md-3">'+
+'                   <div class="col-md-4 cmni btn-danger">'+sub.staging_error+
+'                   </div>'+
+''+
+'                   <div class="col-md-4 cmni btn-warning">'+sub.staging_warn+
+'                   </div>'+
+''+
+'                   <div class="col-md-4 cmni btn-success">'+sub.staging_good+
+'                   </div>'+
+''+
+'                 </div>'+
+'                 <div class="col-md-3">'+
+'                   <div class="col-md-6 cmni btn-warning">'+sub.gdr_warn+
+'                   </div>'+
+'                   <div class="col-md-6 cmni btn-success">'+sub.gdr_good+
+'                   </div>'+
+'                 </div>'+
+''+
+'               </div>'+
+'              <div class="mtop row" style="display:none;">'+
+'              <div class=" col-md-3" style="width:23%;" > </div>'+
+'               <div class=" col-md-9 innr-details notload" style="display:block">'+
+'              </div>'+
+'              </div>';
+  
+
+             })
+             $(th).parent().next().html(ht);
+             $(th).parent().next().addClass('loaded')
+           }
+      })
+    }
+
+$(function() {
+  $("#sstart_date" ).datepicker({
+    dateFormat: "yy-mm-dd",
+    beforeShow:function(){
+      load=1
+    },
+    onSelect: function() {
+             doSearch()
+    },
+    defaultDate: new Date()
+  }).datepicker("setDate", new Date());
+  $("#send_date" ).datepicker({
+    dateFormat: "yy-mm-dd",
+    beforeShow:function(){
+      load=1
+    },
+    onSelect: function() {
+      doSearch()
+    },
+    defaultDate: new Date()
+  }).datepicker("setDate", new Date());
+
+//$(".clickonload").click();
+});
+
+// setInterval(function(){
+//   window.location.reload()
+// },30000)
+
+
+function goPrev(){
+  page=page-1
+  doSearch()
+}
+
+function goNext(){
+    page=page+1
+    doSearch()
+}
+
+function showDetails(th){
+  load=1
+ $(th).hide(0)
+ $(th).next().show(0)
+    loadLevel2(th)
+
+   $(th).parent().parent().next().slideToggle()
+}
+
+function hideDetails(th){
+  load=0
+  $(th).hide(0)
+  $(th).prev().show(0)
+  $(th).parent().parent().next().slideToggle()
+
+
+}
+
+
+
+    function loadLevel2(th){
+         var ai_code=$(th).data('ai_code')
+         var return_name=$(th).data('return_name')
+         var position_date=$(th).data('position_date')
+         var submission_type=$(th).data('submission_type')
+         var zip_file_name=$(th).data('zip_file_name')
+         var job_uuid=$(th).data('job_uuid')
+         $.ajax({
+             url:'/innerdetails/?ai_code='+ai_code+'&return_name='+return_name+'&position_date='+position_date+'&submission_type='+submission_type+'&zip_file_name='+zip_file_name+'&job_uuid='+job_uuid,
+             success:function(data){
+              // alert(data)
+               var jsn= JSON.parse(data);
+               var dhtm="";
+               $.each(jsn, function(i, dt){
+               dhtm=dhtm+'<div class="row  mtop innr-block" style="width:100%">'+
+'                   <div class="col-md-4">'+
+'                       <div class="col-md-2 ghi">'+dt.block_code+
+'                       </div>'+
+'                       <div class="col-md-3 ghi">'+dt.staging_rows+
+
+'                       </div>'+
+'                       <div class="col-md-3 cmni btn-danger">'+dt.staging_failed+
+'                       </div>'+
+'                       <div class="col-md-3 cmni btn-success ">'+dt.staging_good+
+'                       </div>'+
+'                   </div>'+
+'                   <div class="col-md-4 ml">'+
+'                       <div class="col-md-4 cmni btn-danger">'+dt.staging_error+
+'                       </div>'+
+'                       <div class="col-md-4 cmni btn-warning">'+dt.staging_warn+
+'                       </div>'+
+'                       <div class="col-md-4 cmni btn-success">'+dt.staging_good+
+'                       </div>'+
+'                   </div>'+
+'                   <div class="col-md-4">'+
+'                       <div class="col-md-6 cmni btn-warning">'+dt.gdr_warn+
+'                       </div>'+
+'                       <div class="col-md-6 cmni btn-success">'+dt.gdr_good+
+'                       </div>'+
+'                   </div>'+
+'               </div>';
+             })
+
+              $(th).parent().parent().next().find('.innr-details').html(dhtm).addClass('loadnow')
+             }
+         })
+    }
+
+    setInterval(function(){
+      if(load==0)
+      window.location.reload()
+    },11000)
+</script>
+
+{% if start_date %}
+  <script type="text/javascript">
+    $(window).load(function(){
+        $("#sstart_date" ).val('{{start_date}}')
+    })
+  </script>
+
+{% endif %}
+
+{% if end_date %}
+<script type="text/javascript">
+  $(window).load(function(){
+    $("#send_date" ).val('{{end_date}}')
+  })
+</script>
+{% endif %}
+
+
+{% ifequal rml '1' %}
+<script type="text/javascript">
+  $(window).load(function(){
+    $("#srml").attr('checked',true)
+  })
+</script>
+{% endifequal %}
+
+{% ifequal cl '1' %}
+<script type="text/javascript">
+  $(window).load(function(){
+    $("#scl").attr('checked',true)
+  })
+</script>
+{% endifequal %}
+
+{% endblock %}

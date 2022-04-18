@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block meta_title %}Manage Participating AIs{% endblock %}
+{% block title %}{% trans "Manage Participating AIs" %}{% endblock %}
+{% load staticfiles %}
+{% block breadcrumb_menu %}
+<li class="active">{% trans "Home" %}</li>
+{% endblock %}
+
+{% block main %}
+
+<div class="modal fade" id="modal-help">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <object type="application/pdf" data="{% static "pdf/ais.pdf" %}" width="100%" height="500" style="height: 85vh;">
+          <a target="_blank" href="{% static "pdf/ais.pdf" %}"> Click here to open </a>
+        </object>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="row">
+  <div class="col-md-10" >
+    <div class="headertitle" style="backgroud:#FE9E00;border:1px solid #fff;color:#fff">
+         Manage Participating AIs
+   </div>
+   </div>
+
+   <div class="col-md-2" >
+   <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-help"> Help &nbsp;<i class="fa fa-question-circle"> </i> </button>
+   </div>
+</div>
+
+<div class="col-md-12">
+  <div class="pull-right">
+  <a href="/create" class="btn btn-primary">Add New Record</a>
+
+
+  </div>
+    <br>
+      <br>
+<div class="module">
+<table class="display" id="myTable">
+    <thead class="thead-dark">
+    <tr>
+      <th>AI Number</th>
+        <th>AI Code</th>
+        <th>AI Name</th>
+        <th> Emails</th>
+        <th> Active in GDR</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+{% for ai in ais %}
+    <tr>
+       <td>{{ ai.ai_no }}</td>
+        <td>{{ ai.ai_code }}</td>
+        <td>{{ ai.create_dtm.ai_name }}</td>
+        <td>{{ ai.email }}</td>
+        <td>
+          {% if ai.status %}
+           Yes
+          {% else %}
+           No
+          {% endif %}
+        </td>
+        <td>
+            <a href="/edit/{{ ai.id }}"><span class="glyphicon glyphicon-pencil" >Edit</span></a>
+            &nbsp; &nbsp;
+            {% if ai.status %}
+             <a href="/delete/{{ ai.id }}"> <span class="glyphicon glyphicon-remove" > Deactivate </span></a>
+            {% else %}
+             <a href="/activate/{{ ai.id }}"> <span class="glyphicon glyphicon-ok" > Activate </span></a>
+            {% endif%}
+
+        </td>
+    </tr>
+{% endfor %}
+    </tbody>
+</table>
+</div>
+</div>
+{% endblock %}

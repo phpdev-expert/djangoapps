@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{% load staticfiles %}
+{% block extrahead %}
+    <style>
+       .smenu-Content{
+         display:none
+       }
+       .smenu-Site{
+         display:none
+       }
+       .smenu-Users{
+          display:none
+       }
+       .changelist-actions.actions{
+         display:none;
+       }
+       .deletelink-box{
+         display:none
+       }
+       .deletelink{
+         display:none;
+       }
+    </style>
+    <script>
+      jQuery(function($) {
+        $("#content h1").after('<ul style="float: right;margin-right: 12%" class="object-tools"> <li><a href="#" onclick="showPdf();" class="focus">Help</a></li></ul>')
+      })
+
+      function showPdf(){
+         window.open("{% static "pdf/sub_moniter.pdf" %}")
+      }
+    </script>
+
+
+{% endblock %}

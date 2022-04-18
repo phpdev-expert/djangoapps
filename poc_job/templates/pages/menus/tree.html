@@ -1,0 +1,47 @@
+{% load i18n pages_tags %}
+{% spaceless %}
+<ul class="nav nav-list navlist-menu-level-{{ branch_level }}">
+  {% if user.is_authenticated %}
+
+
+
+
+  <li>
+  <a href="/subdashboard" class="m-items"> Submission Dashboard</a>
+  </li>
+
+  <li>
+  <a href="/dashboard" class="m-items"> GDR Dashboard</a>
+  </li>
+
+
+
+  <li>
+  <a href="/show" class="m-items"> Participating AIs</a>
+  </li>
+
+  <li>
+  <a href="/aissettings" class="m-items">Return deadlines</a>
+  </li>
+  <li>
+  <a href="/submission" class="m-items">Daily Submissions</a>
+  </li>
+
+  <li>
+  <a href="/deadlinesubs" class="m-items">Submissions by deadlines</a>
+  </li>
+
+  <li>
+<a  style="text-align: center;font-weight: bold;
+    color: #fff;font-size: 18px;" href="{% url 'logout' %}">
+    <i class="fa fa-power-off"> </i>
+    Logout</a>
+</li>
+
+{% else %}
+<li>
+<a href="{% url 'login' %}">login</a>
+  </li>
+  {% endif %}
+</ul>
+{% endspaceless %}

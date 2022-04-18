@@ -1,0 +1,587 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% block breadcrumb_menu %}
+{% block meta_title %}{% trans "Submission monitoring" %}{% endblock %}
+<li class="active">{% trans "Submission monitoring" %}</li>
+{% endblock %}
+{% block main %}
+
+<script type="text/javascript">
+  var load=0
+</script>
+<div class="modal fade" id="modal-help">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <object  type="application/pdf" data="{% static "pdf/sub_moniter.pdf" %}" width="100%" height="500" style="height: 85vh;">
+                <a target="_blank" href="{% static "pdf/sub_moniter.pdf" %}"> Click here to open </a>
+      </object >
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="row">
+  <div class="col-md-10" >
+    <div class="headertitle" style="backgroud:#FE9E00;border:1px solid #fff;color:#fff">
+         Submission monitoring
+   </div>
+   </div>
+   <div class="col-md-2">
+        <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-help"> Help &nbsp;<i class="fa fa-question-circle"> </i></button>
+ </div>
+</div>
+
+<div class="col-md-12">
+  <div class="col-md-12">
+  <div class="row">
+
+    <div class="pull-left" style="margin-left: 10px">
+      <input id="sstart_date"  name="" placeholder="start date" type="text"> &nbsp;
+      <input id="send_date"  name="" placeholder="end date" type="text"> &nbsp;
+      <input id="srml"  type="checkbox" name="" placeholder=""> &nbsp; RML &nbsp;&nbsp;
+      <input id="scl" type="checkbox" name="" placeholder=""> &nbsp; CL
+      </div>
+    <div class="pull-right" style="margin-right: 10px">
+      <input  id="s_search" type="search" name="" value="{{search}}">
+
+      <button type="button" name="button" class="btn btn-primary" onclick="doSearch()"> SEARCH</button>
+      <button type="button" name="button" class="btn btn-primary" onclick="clearSearch()">
+        <i class="fa fa-times-circle" style="color:red;cursor:pointer"> </i>
+        CLEAR
+      </button>
+      </div>
+    </div>
+  </div>
+
+    <div class="module">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="col-md-3 gh">
+                    AI
+                    {% ifequal colun 'ai_code' %}
+                    <span class="{{ord}}">
+                    {% else %}
+                    <span class="none">
+                    {% endifequal %}
+                    <i class="fa fa-fw fa-sort" onclick="sortme('ai_code','asc')"></i>
+                    <i class="fa fa-sort-asc" onclick="sortme('ai_code','desc')"></i>
+                    <i class="fa fa-sort-desc" onclick="sortme('ai_code','asc')"></i>
+                    </span>
+                </div>
+                <div class="col-md-6 lh">
+                    AI Name
+                    {% ifequal colun 'ai_name' %}
+                    <span class="{{ord}}">
+                    {% else %}
+                    <span class="none">
+                    {% endifequal %}
+                    <i class="fa fa-fw fa-sort" onclick="sortme('ai_name','asc')"></i>
+                    <i class="fa fa-sort-asc" onclick="sortme('ai_name','desc')"></i>
+                    <i class="fa fa-sort-desc" onclick="sortme('ai_name','asc')"></i>
+                    </span>
+                </div>
+                <div class="col-md-3 lh">
+                    Return
+                </div>
+            </div>
+            <div class="col-md-3 gh">
+                Position
+                {% ifequal colun 'position_date' %}
+                <span class="{{ord}}">
+                {% else %}
+                <span class="none">
+                {% endifequal %}
+                <i class="fa fa-fw fa-sort" onclick="sortme('position_date','asc')"></i>
+                <i class="fa fa-sort-asc" onclick="sortme('position_date','desc')"></i>
+                <i class="fa fa-sort-desc" onclick="sortme('position_date','asc')"></i>
+                </span>
+            </div>
+            <div class="col-md-3 lh">
+                Submission
+                {% ifequal colun 'zip_file_timestamp' %}
+                <span class="{{ord}}">
+                {% else %}
+                <span class="none">
+                {% endifequal %}
+                <i class="fa fa-fw fa-sort" onclick="sortme('zip_file_timestamp','asc')"></i>
+                <i class="fa fa-sort-asc" onclick="sortme('zip_file_timestamp','desc')"></i>
+                <i class="fa fa-sort-desc" onclick="sortme('zip_file_timestamp','asc')"></i>
+                </span>
+            </div>
+        </div>
+        <div class="row mtop">
+            <div class="col-md-6">
+                <div class="col-md-4 ghi">
+                    Total csv rows
+                </div>
+                <div class="col-md-4 lhi">
+                    Staging Rejected
+                </div>
+                <div class="col-md-4 lhi">
+                    Staging Imported
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="col-md-4 lhi">
+                    Error
+                </div>
+                <div class="col-md-4 lhi">
+                    Warn
+                </div>
+                <div class="col-md-4 lhi">
+                    Pass
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="col-md-6 lhi">
+                    GDR Warn
+                </div>
+                <div class="col-md-6 lhi">
+                    GDR Pass
+                </div>
+            </div>
+        </div>
+        {% for sub in submission %}
+        <div class="row outer">
+            <div class="mtop col-md-12">
+                <div class="col-md-12">
+                    <div class="col-md-5 lhi">
+                        {{sub.zip_file_name}}
+                    </div>
+
+                    <div class="col-md-4 lhi">
+                        {{sub.job_uuid}}
+                    </div>
+
+                </div>
+            </div>
+            <div class="mtop col-md-12">
+                <div class="col-md-6">
+                    <div class="col-md-3 gh">
+                        {{sub.ai_code}}
+                    </div>
+                    <div class="col-md-6 lh">
+                        {{sub.nm}}
+                    </div>
+                    <div class="col-md-3 lh">
+                        {{sub.return_name}}
+                    </div>
+                </div>
+                <div class="col-md-3 gh">
+                    {{sub.position_date}}
+                </div>
+                <div class="col-md-3 lh">
+                    {{sub.zip_file_timestamp}}
+                </div>
+            </div>
+            <div class=" col-md-12 mtop">
+                <div class="col-md-6">
+                    <div class="col-md-4 ghi">
+                        {{sub.tot_csv_rows}}
+                    </div>
+                    <div class="col-md-4 cmni btn-danger">
+                        {{sub.staging_failed}}
+                    </div>
+                    <div class="col-md-4 cmni btn-success ">
+                        {{sub.staging_rows}}
+                    </div>
+                </div>
+                <div class="col-md-3 mlo">
+                    <div class="col-md-4 cmni btn-danger">
+                        {{sub.staging_error}}
+                    </div>
+                    <div class="col-md-4 cmni btn-warning">
+                        {{sub.staging_warn}}
+                    </div>
+                    <div class="col-md-4 cmni btn-success">
+                        {{sub.staging_good}}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="col-md-6 cmni btn-warning">
+                        {{sub.gdr_warn}}
+                    </div>
+                    <div class="col-md-6 cmni btn-success">
+                        {{sub.gdr_good}}
+                    </div>
+                </div>
+            </div>
+            <div class="row mtop">
+                <div class=" col-md-1"  style="width: 2%;">
+                    <i class="fa fa-play" style="font-size: 22px;cursor:pointer"
+
+                    data-ai_code="{{sub.ai_code}}"
+                    data-return_name="{{sub.return_name}}"
+                    data-position_date="{{sub.position_date|date:'Y-m-d'}}"
+                    data-submission_type="{{sub.submission_type}}"
+                    data-zip_file_name="{{sub.zip_file_name}}"
+                    data-job_uuid="{{sub.job_uuid}}"
+
+                    onclick="showDetails(this)"> </i>
+                    <i class="fa fa-sort-desc" style="font-size: 40px;cursor:pointer;display:none" onclick="hideDetails(this)"> </i>
+                </div>
+                <div class=" col-md-11 innr-details notload" style="width: 95%;" >
+                  <div class="lds-css ng-scope">
+                  <div class="lds-spinner" style="width:100%;height:100%"><div></div><div></div><div></div><div>
+                  </div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+<div class="text-center" style="margin-top: 10px;">
+  <button type="button" name="button" class="btn btn-success" onclick="getMoreSubs()"> Load More</button>
+</div>
+</div>
+<script>
+  
+    function sortme(col,order){
+       window.location.href='/submission/?sort='+col+'&order='+order
+    }
+
+    function doSearch(){
+          var serach=$("#s_search").val()
+          var start_date=$("#sstart_date").val()
+          var end_date=$("#send_date").val()
+          var rml=$("#srml:checkbox:checked").length
+          var cl=$("#scl:checkbox:checked").length
+          window.location.href='/submission/?search='+serach+'&start_date='+start_date+'&end_date='+end_date+'&rml='+rml+'&cl='+cl
+    }
+
+    function clearSearch(){
+      window.location.href='/submission/';
+    }
+    function showDetails(th){
+      load=1
+     $(th).hide(0)
+     $(th).next().show(0)
+     if($(th).parent().next().hasClass('notload')){
+        loadLevel2(th)
+     }
+       $(th).parent().next().slideToggle()
+    }
+
+    function hideDetails(th){
+      load=0
+      $(th).hide(0)
+      $(th).prev().show(0)
+      $(th).parent().next().slideToggle()
+
+
+    }
+    $(document).on('click','.innr-block',function(){
+    $(this).next().slideToggle()
+    });
+
+    var page =1;
+    function getMoreSubs(){
+      page++
+      $.ajax({
+          url:'/loadmore/?page='+page+'&search={{search}}&sort={{colun}}&order={{ord}}&start_date={{start_date}}&end_date={{end_date}}&rml={{rml}}&cl={{cl}}',
+          success:function(data){
+            var html="";
+            var jsn= JSON.parse(data);
+            $.each(jsn, function(i, sub){
+              //alert(sub.ai_code)
+            html=html+'<div class="row outer">'+
+'                  <div class="mtop col-md-12">'+
+'                      <div class="col-md-12">'+
+'                          <div class="col-md-6 lhi">'+sub.zip_file_name+
+'                          </div>'+
+''+
+'                          <div class="col-md-6 lhi">'+sub.job_uuid+
+'                          </div>'+
+''+
+'                      </div>'+
+'                  </div>'+
+'                  <div class="mtop col-md-12">'+
+'                      <div class="col-md-6">'+
+'                          <div class="col-md-3 gh">'+sub.ai_code+
+'                          </div>'+
+'                          <div class="col-md-6 lh">'+sub.nm+
+'                          </div>'+
+'                          <div class="col-md-3 lh">'+sub.return_name+
+'                          </div>'+
+'                      </div>'+
+'                      <div class="col-md-3 gh">'+sub.position_date+
+'                      </div>'+
+'                      <div class="col-md-3 lh">'+sub.zip_file_timestamp+
+'                      </div>'+
+'                  </div>'+
+'                  <div class=" col-md-12 mtop">'+
+'                      <div class="col-md-6">'+
+'                          <div class="col-md-4 ghi">'+sub.tot_csv_rows+
+'                          </div>'+
+'                          <div class="col-md-4 cmni btn-danger">'+sub.staging_failed+
+'                          </div>'+
+'                          <div class="col-md-4 cmni btn-success ">'+sub.staging_rows+
+'                          </div>'+
+'                      </div>'+
+'                      <div class="col-md-3  mlo">'+
+'                          <div class="col-md-4 cmni btn-danger">'+sub.staging_error+
+'                          </div>'+
+'                          <div class="col-md-4 cmni btn-warning">'+sub.staging_warn+
+'                          </div>'+
+'                          <div class="col-md-4 cmni btn-success">'+sub.staging_good+
+'                          </div>'+
+'                      </div>'+
+'                      <div class="col-md-3">'+
+'                          <div class="col-md-6 cmni btn-warning">'+sub.gdr_warn+
+'                          </div>'+
+'                          <div class="col-md-6 cmni btn-success">'+ sub.gdr_good+
+'                          </div>'+
+'                      </div>'+
+'                  </div>'+
+'                  <div class="row mtop">'+
+'                      <div class=" col-md-1"  style="width: 2%;">'+
+'                          <i class="fa fa-play" style="font-size: 22px;cursor:pointer"'+
+'                          data-ai_code="'+sub.ai_code+'"'+
+'                          data-return_name="'+sub.return_name+'"'+
+'                          data-position_date="'+sub.position_date+'"'+
+'                          data-submission_type="'+sub.submission_type+'"'+
+'                          data-zip_file_name="'+sub.zip_file_name+'"'+
+'                          data-job_uuid="'+sub.job_uuid+'"'+
+'                          onclick="showDetails(this)"> </i>'+
+'                          <i class="fa fa-sort-desc" style="font-size: 40px;cursor:pointer;display:none" onclick="hideDetails(this)"> </i>'+
+'                      </div>'+
+'                      <div class=" col-md-11 innr-details notload" style="width: 95%;" >'+
+'                        Loading......'+
+'                      </div>'+
+'                  </div>'+
+'              </div>';
+  
+
+          });
+           $(".module").append(html)
+          }
+      })
+    }
+
+    function loadLevel2(th){
+         var ai_code=$(th).data('ai_code')
+         var return_name=$(th).data('return_name')
+         var position_date=$(th).data('position_date')
+         var submission_type=$(th).data('submission_type')
+         var zip_file_name=$(th).data('zip_file_name')
+         var job_uuid=$(th).data('job_uuid')
+         $.ajax({
+             url:'/innerdetails/?ai_code='+ai_code+'&return_name='+return_name+'&position_date='+position_date+'&submission_type='+submission_type+'&zip_file_name='+zip_file_name+'&job_uuid='+job_uuid,
+             success:function(data){
+               var jsn= JSON.parse(data);
+               var dhtm="";
+               $.each(jsn, function(i, dt){
+                 var errHtml="";
+                  $.each(dt.erors, function(i, err){
+                errHtml=errHtml+'<div class="row  mtop '+err.result+'">'+
+'                   <div class="col-md-1">'+
+'                   </div>'+
+'                     <div class="col-md-5">'+
+'                         <div class="col-md-4 cmni">'+err.event_id+
+'                         </div>'+
+'                         <div class="col-md-8 cmni">'+err.row_key+
+'                         </div>'+
+'                     </div>'+
+'                     <div class="col-md-3">'+
+'                         <div class="col-md-6 cmni">'+err.field_label+
+'                         </div>'+
+'                         <div class="col-md-6 cmni">'+err.validation_rule+
+'                         </div>'+
+'                     </div>'+
+'                     <div class="col-md-3">'+
+'                         <div class="col-md-12 cmni">'+err.remark+
+'                         </div>'+
+'                     </div>'+
+'                 </div>';
+               })
+
+               dhtm=dhtm+'<div class="row  mtop innr-block">'+
+'                   <div class="col-md-6">'+
+'                       <div class="col-md-1">'+
+'                       </div>'+
+'                       <div class="col-md-2 ghi">'+dt.block_code+
+'                       </div>'+
+'                       <div class="col-md-3 ghi">'+dt.staging_rows+
+'                       </div>'+
+'                       <div class="col-md-3 cmni btn-danger">'+dt.staging_failed+
+'                       </div>'+
+'                       <div class="col-md-3 cmni btn-success ">'+dt.staging_good+
+'                       </div>'+
+'                   </div>'+
+'                   <div class="col-md-3 ml">'+
+'                       <div class="col-md-4 cmni btn-danger">'+dt.staging_error+
+'                       </div>'+
+'                       <div class="col-md-4 cmni btn-warning">'+dt.staging_warn+
+'                       </div>'+
+'                       <div class="col-md-4 cmni btn-success">'+dt.staging_good+
+'                       </div>'+
+'                   </div>'+
+'                   <div class="col-md-3">'+
+'                       <div class="col-md-6 cmni btn-warning">'+dt.gdr_warn+
+'                       </div>'+
+'                       <div class="col-md-6 cmni btn-success">'+dt.gdr_good+
+'                       </div>'+
+'                   </div>'+
+'               </div>'+
+'              <div class="row erros" style="display:none">'+
+'                <div class="erra">'+
+'               `+errHtml+`'+
+'               </div>'+
+'               <div style="text-align:center">'+
+'                 <button class="btn btn-primary" style="cursor:pointer;margin-top: 10px;"'+
+''+
+'                 data-ai_code="'+dt.ai_code+'"'+
+'                 data-page="1"'+
+'                 data-job_uuid="'+dt.job_uuid+'"'+
+'                 data-position_date="'+dt.position_date+'"'+
+'                 data-return_name="'+dt.return_name+'"'+
+'                 data-submission_type="'+dt.submission_type+'"'+
+'                 data-zip_file_name="'+dt.zip_file_name+'"'+
+'                 data-block_code="'+dt.block_code+'"'+
+'                 data-zip_file_timestamp="'+dt.zip_file_timestamp+'"'+
+'                 onclick="showDetailsmorepage(this)"> Load more </button>'+
+'               </div>'+
+'               </div>';
+             })
+              $(th).parent().next().html(dhtm).addClass('notload')
+             }
+         })
+    }
+
+
+
+
+
+    function showDetailsmorepage(th){
+      load=1
+
+
+
+     var ai_code=$(th).data('ai_code')
+     var return_name=$(th).data('return_name')
+     var position_date=$(th).data('position_date')
+     var submission_type=$(th).data('submission_type')
+     var zip_file_name=$(th).data('zip_file_name')
+     var job_uuid=$(th).data('job_uuid')
+     var zip_file_timestamp =$(th).data('zip_file_timestamp')
+     var block_code=$(th).data('block_code')
+     var page=parseInt($(th).data('page'))+1;
+     $(th).data('page',page)
+
+
+     $.ajax({
+         url:'/innersubdashboard/?ai_code='+ai_code+'&return_name='+return_name+'&position_date='+position_date+'&submission_type='+submission_type+'&zip_file_name='+zip_file_name+'&job_uuid='+job_uuid+'&block_code='+block_code+'&zip_file_timestamp='+zip_file_timestamp+'&page='+page,
+         success:function(data){
+            var jsn= JSON.parse(data);
+            var errHtml="";
+            $.each(jsn, function(i, err){
+            errHtml=errHtml+'<div class="row  mtop '+err.result+'">'+
+'               <div class="col-md-1">'+
+'               </div>'+
+'                 <div class="col-md-5">'+
+'                     <div class="col-md-4 cmni">'+err.event_id+
+'                     </div>'+
+'                     <div class="col-md-8 cmni">'+err.row_key+
+'                     </div>'+
+'                 </div>'+
+'                 <div class="col-md-3">'+
+'                     <div class="col-md-6 cmni">'+err.field_label+
+'                     </div>'+
+'                     <div class="col-md-6 cmni">'+err.validation_rule+
+'                     </div>'+
+'                 </div>'+
+'                 <div class="col-md-3">'+
+'                     <div class="col-md-12 cmni">'+err.remark+
+'                     </div>'+
+'                 </div>'+
+'             </div>';;
+           })
+
+           $(th).parent().prev().append(errHtml)
+         }
+     })
+
+    }
+
+
+$(function() {
+  $("#sstart_date" ).datepicker({
+    dateFormat: "yy-mm-dd",
+    beforeShow:function(){
+      load=1
+    },
+    onSelect: function() {
+             doSearch()
+    },
+    defaultDate: new Date()
+  }).datepicker("setDate", new Date());
+  $("#send_date" ).datepicker({
+    dateFormat: "yy-mm-dd",
+    beforeShow:function(){
+      load=1
+    },
+    onSelect: function() {
+             doSearch()
+    },
+    defaultDate: new Date()
+  }).datepicker("setDate", new Date());
+
+  $("#srml").click(function(){
+    doSearch()
+  })
+
+  $("#scl").click(function(){
+    doSearch()
+  })
+
+});
+
+
+setInterval(function(){
+  if(load==0)
+  window.location.reload()
+},11000)
+
+</script>
+
+{% if start_date %}
+  <script type="text/javascript">
+    $(window).load(function(){
+        $("#sstart_date" ).val('{{start_date}}')
+    })
+  </script>
+
+{% endif %}
+
+{% if end_date %}
+<script type="text/javascript">
+  $(window).load(function(){
+    $("#send_date" ).val('{{end_date}}')
+  })
+</script>
+{% endif %}
+
+
+{% ifequal rml '1' %}
+<script type="text/javascript">
+  $(window).load(function(){
+    $("#srml").attr('checked',true)
+  })
+</script>
+{% endifequal %}
+
+{% ifequal cl '1' %}
+<script type="text/javascript">
+  $(window).load(function(){
+    $("#scl").attr('checked',true)
+  })
+</script>
+{% endifequal %}
+
+{% endblock %}

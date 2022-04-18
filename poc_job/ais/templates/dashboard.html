@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block breadcrumb_menu %}
+{% load staticfiles %}
+{% block meta_title %}{% trans "Dashboard" %}{% endblock %}
+<li class="active">{% trans "Dashboard" %}</li>
+{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" />
+
+<div class="row">
+  <div class="col-md-10" >
+    <div class="headertitle" style="backgroud:#FE9E00;border:1px solid #fff;color:#fff">
+         Dashboard
+   </div>
+
+   </div>
+   <div class="col-md-2" >
+   <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-help"> Help &nbsp;<i class="fa fa-question-circle"> </i> </button>
+   </div>
+</div>
+<div class="col-md-12">
+
+    <div class="col-md-3">
+        <label>Return Type</label>
+    <select name="return" id="return_type" style="height:35px;width:125px;">
+      <option value=''>All</option>
+      <option ='RML'>RML</option>
+      <option ='CL'>CL</option>
+    </select>
+
+    </div>
+
+    <div class="col-md-3" id="pdtp">
+       <label>Deadline</label>
+
+
+     <select id="sstart_date" class="top-date"  name="deadline" >
+           <option value="">-- select-- </option>
+       {% for a in aisd %}
+       <<option value="{{a.deadline|date:'Y-m-d'}}"> {{a.deadline|date:'Y-m-d'}} </option>
+       {% endfor %}
+     </select>
+
+  </div>
+
+</div>
+</div>
+<div class="col-md-12 mtop">
+   <div class="col-md-12 mtop">
+
+      <div class="col-md-3 dasbox">
+         <div class="col-md-3">
+            <i class="fas fa-landmark"></i>
+         </div>
+         <div class="col-md-9">
+            <strong class="total"> {{ais.total}} </strong>
+            <br>
+            <span> Total participating AIs </span>
+         </div>
+      </div>
+
+      <div class="col-md-3 dasbox">
+         <div class="col-md-3">
+            <i class="fas fa-landmark"></i>
+         </div>
+         <div class="col-md-9">
+            <strong class="actie"> {{ais.active}} </strong>
+            <br>
+            <span> Active in GDR</span>
+         </div>
+      </div>
+
+      <div class="col-md-3 dasbox">
+         <div class="col-md-3">
+            <i class="fas fa-landmark"></i>
+         </div>
+         <div class="col-md-9">
+            <strong class="inactive"> {{ais.inactive}} </strong>
+            <br>
+            <span> Inactive in GDR</span>
+         </div>
+      </div>
+
+   </div>
+</div>
+
+<div class="col-md-12 mtop2 hideonall" style="border:1px solid;width: 78%;"></div>
+
+<div class="col-md-12 mtop2 hideonall">
+   <div class="col-md-12 mtop">
+
+      <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas fa-file-upload"></i>
+        </div>
+        <div class="col-md-9">
+            <strong class="inactive"> {{d}} </strong>
+        </div>
+          <div class="col-md-12">
+            <span> No. of AIs no submissions </span>
+          </div>
+      </div>
+
+      <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas fa-file-upload"></i>
+        </div>
+        <div class="col-md-9">
+            <strong class="actie">
+              {{e}}
+
+
+                </strong>
+        </div>
+          <div class="col-md-12">
+            <span> No. of AIs submitted BEFORE deadline</span>
+          </div>
+      </div>
+
+      <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas fa-file-upload"></i>
+        </div>
+        <div class="col-md-9">
+            <strong class="warn"> {{f}}  </strong>
+        </div>
+        <div class="col-md-12">
+        <span>No. of AIs submitted AFTER deadline</span>
+        </div>
+   </div>
+ </div>
+</div>
+
+<div class="col-md-12 mtop2" style="border:1px solid;width: 78%;"></div>
+<div class="col-md-12 mtop2">
+   <div class="col-md-12 mtop">
+     <div class="col-md-3" style="margin-right:30px">
+
+     </div>
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas fa-file-upload"></i>
+        </div>
+        <div class="col-md-9">
+           <strong class="actie">
+           {% for e in gh%}
+             {{e.gdr_good}}
+           {% endfor %}
+          </strong>
+           <br>
+           <span> Total GOOD</span>
+        </div>
+     </div>
+
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas fa-file-upload"></i>
+        </div>
+        <div class="col-md-9">
+           <strong class="warn">
+             {% for e in gh%}
+               {{e.gdr_warn}}
+             {% endfor %}
+            </strong>
+           <br>
+           <span> Total WARN</span>
+        </div>
+     </div>
+
+   </div>
+</div>
+
+<div class="col-md-12 mtop2">
+   <div class="col-md-12 mtop">
+
+     <div class="col-md-3" style="margin-right:30px">
+
+     </div>
+
+
+
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas-text">R</i>
+        </div>
+        <div class="col-md-9">
+           <strong class="actie">
+             {% for e in ij%}
+               {{e.gdr_good}}
+             {% endfor %}
+            </strong>
+           <br>
+           <span> Regular with GOOD</span>
+        </div>
+     </div>
+
+
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+          <i class="fas-text">R</i>
+        </div>
+        <div class="col-md-9">
+           <strong class="warn">
+             {% for e in ij%}
+                {{e.gdr_warn}}
+              {% endfor %}
+            </strong>
+           <br>
+           <span> Regular with WARN</span>
+        </div>
+     </div>
+
+
+   </div>
+</div>
+
+<div class="col-md-12 mtop2">
+   <div class="col-md-12 mtop">
+
+     <div class="col-md-3" style="margin-right:30px">
+
+     </div>
+
+
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas-text">F</i>
+        </div>
+        <div class="col-md-9">
+           <strong class="actie">
+
+             {% for e in kl%}
+                {{e.gdr_good}}
+              {% endfor %}
+             </strong>
+           <br>
+           <span> Full with GOOD</span>
+        </div>
+     </div>
+
+
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+          <i class="fas-text">F</i>
+        </div>
+        <div class="col-md-9">
+           <strong class="warn">
+             {% for e in kl%}
+                {{e.gdr_warn}}
+              {% endfor %}
+            </strong>
+           <br>
+           <span> Full with WARN </span>
+        </div>
+     </div>
+
+
+   </div>
+</div>
+
+
+<div class="col-md-12 mtop2">
+   <div class="col-md-12 mtop">
+
+     <div class="col-md-3" style="margin-right:30px">
+
+     </div>
+
+
+
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+           <i class="fas-text">D</i>
+        </div>
+        <div class="col-md-9">
+           <strong class="actie">
+             {% for e in mn%}
+                {{e.gdr_good}}
+              {% endfor %}
+            </strong>
+           <br>
+           <span> Delta with GOOD</span>
+        </div>
+     </div>
+
+
+     <div class="col-md-3 dasbox">
+        <div class="col-md-3">
+          <i class="fas-text">D</i>
+        </div>
+        <div class="col-md-9">
+           <strong class="inactive">
+
+             {% for e in mn%}
+                {{e.gdr_warn}}
+              {% endfor %}
+
+            </strong>
+           <br>
+           <span> Delta with WARN</span>
+        </div>
+     </div>
+
+
+   </div>
+</div>
+
+<div class="modal fade" id="modal-help">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <object type="application/pdf" data="{% static "pdf/dashboard.pdf" %}" width="100%" height="500" style="height: 85vh;">No Support</object>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<style media="screen">
+.fa-landmark, .fa-file-upload{
+  font-size:45px;
+}
+.dasbox{
+  margin-right: 30px;
+  padding: 20px 15px;
+  border: 2px solid #A4B23D;
+  border-radius:8px;
+  -webkit-box-shadow: 4px 6px 6px 0px rgba(184,184,184,1);
+  -moz-box-shadow: 4px 6px 6px 0px rgba(184,184,184,1);
+  box-shadow: 4px 6px 6px 0px rgba(184,184,184,1);
+}
+  input.top-date{
+    color: #fff !important ;
+    background: #938c8c;
+    padding: 10px 15px;
+    height: 50px;
+    font-size: 19px;
+    font-weight: bold;
+  }
+
+.dasbox .actie{
+  color: #74c33c;
+  font-size: 40px;
+  padding-top: 10px;
+    display: inline-block;
+}
+
+.dasbox .total{
+font-size: 40px;
+padding-top: 10px;
+    display: inline-block;
+}
+
+.mtop2{
+  margin-top:30px;
+}
+.dasbox .inactive{
+  color:#e35465;
+  font-size: 40px;
+  padding-top: 10px;
+  display: inline-block;
+}
+
+.dasbox .warn{
+  color:#e8e655;
+  font-size: 40px;
+
+}
+.gh-box{
+  margin-right: 30px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 9px;
+}
+
+.fas-text{
+  font-size: 45px;
+  font-weight: bold;
+  margin-top: 15px;
+  display: block;
+}
+.dasbox span{
+      font-size: 12px;
+}
+select{
+  height: 35px;
+    width: 200px;
+}
+</style>
+<script>
+  function formatDate() {
+    var d = new Date(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2)
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+var dt=formatDate();
+$(function() {
+  //$("#sstart_date").append('<option value="'+dt+'">'+dt+'</option>')
+  $("#sstart_date" ).change(function(){
+     doSearch()
+  })
+
+  $("#sstart_date").val('{{date}}')
+  $("#return_type").val('{{rtype}}')
+
+  $("#return_type").change(function(){
+     doSearch()
+  })
+});
+
+function doSearch(){
+  var date=$("#sstart_date").val()
+  var rtype=$("#return_type").val()
+  if(rtype=='' || !date){
+    date=''
+  }
+
+     window.location.href='/dashboard/?date='+date+'&rtype='+rtype
+}
+
+setInterval(function(){
+  window.location.reload()
+},10000)
+
+
+
+
+
+
+$(document).ready(function(){
+  if($('#return_type').val()==''){
+    $("#pdtp").html('')
+    $(".hideonall").hide();
+  }
+
+  if($('#sstart_date').val()==''){
+    $(".hideonall").hide();
+  }
+
+  })
+
+</script>
+{% endblock %}

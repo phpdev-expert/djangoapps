@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% block meta_title %} Add AI's Participating {% endblock %}
+{% block title %}{% trans " Add AI's Participating" %}{% endblock %}
+
+{% block breadcrumb_menu %}
+<li class="active">{% trans "Home" %}</li>
+{% endblock %}
+
+{% block main %}
+
+<div class="modal fade" id="modal-help">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <object type="application/pdf" data="{% static "pdf/ais_edit.pdf" %}" width="100%" height="500" style="height: 85vh;">
+          <a target="_blank" href="{% static "pdf/ais_edit.pdf" %}"> Click here to open </a>
+        </object>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="row">
+  <div class="col-md-10" >
+    <div class="headertitle" style="backgroud:#FE9E00;border:1px solid #fff;color:#fff">
+        Edit Participating AI
+   </div>
+
+   </div>
+   <div class="col-md-2">
+        <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-help"> Help  &nbsp;<i class="fa fa-question-circle"> </i></button>
+ </div>
+</div>
+
+{% if aisserror %}
+<div class="alert alert-danger">
+  <strong>Error!</strong> {{ aisserror }}
+</div>
+{% endif %}
+
+<form method="POST" class="post-form" action="/update/{{aiss.id}}/">
+        {% csrf_token %}
+    <div class="container">
+<br>
+    <div class="form-group row">
+    <label class="col-sm-1 col-form-label"></label>
+    <div class="col-sm-4">
+    <h3>UPATE Details</h3>
+    </div>
+  </div>
+
+
+  <div class="form-group row">
+    <div class="col-sm-2 lableouter">
+    <label class="col-form-label">AI Code:</label>
+    </div>
+    <div class="col-sm-8">
+      <select name="ai_code" class="form-control" id="ai_code_select">
+        {% for dim in dimension %}
+        {% ifequal aiss.ai_code dim.ai_code %}
+         <option  selected value="{{dim.ai_code}}###{{dim.ai_id}}###{{dim.ai_no}}" > {{dim.ai_no}} - {{dim.ai_name}} </option>
+       {% else %}
+         <option value="{{dim.ai_code}}###{{dim.ai_id}}###{{dim.ai_no}}" > {{dim.ai_no}} - {{dim.ai_name}} </option>
+       {% endifequal %}
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+
+  <input type="hidden" name="ai_code" id="ai_code_input">
+  <input type="hidden" name="ai_id" id="ai_id_input">
+  <input type="hidden" name="ai_no" id="ai_no_input">
+
+  <div class="form-group row">
+    <div class="col-sm-2 lableouter">
+    <label class="col-form-label">AI Number:</label>
+    </div>
+    <div class="col-sm-8">
+      <span id="ai_id_select"></span>
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <div class="col-sm-2 lableouter">
+    <label class="col-form-label">AI Name:</label>
+    </div>
+    <div class="col-sm-8">
+        <span id="ai_name_select"></span>
+    </div>
+  </div>
+
+
+    <div class="form-group row">
+        <div class="col-sm-2 lableouter">
+    <label class=" col-form-label">Emails </label>
+    </div>
+    <div class="col-sm-8">
+      <input value="{{aiss.email}}"  placeholder="(can be multiple email addresses, separated by comma)" type="text" name="email_address" maxlength="500" id="email_address" class="form-control">
+    </div>
+  </div>
+  <div class="form-group row">
+    <div class="col-sm-2 lableouter">
+  <label class="col-form-label">Active in GDR:</label>
+  </div>
+  <div class="col-sm-2">
+
+Yes
+  {% if aiss.status%}
+   <input type="radio" name="status" value="True" checked>
+  {% else %}
+   <input type="radio" name="status" value="True" >
+  {% endif %}
+  </div>
+
+  <div class="col-sm-2">
+    No
+    {% ifequal False aiss.status %}
+     <input type="radio" name="status" value="False" checked>
+    {% else %}
+    <input type="radio" name="status" value="False">
+    {% endifequal %}
+  </div>
+</div>
+
+<div class="form-group row bottom-bar">
+    <label class="col-sm-1 col-form-label"></label>
+    <div class="col-sm-8">
+      <div class="pull-right">
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="/show" class="btn btn-primary">Cancel</a>
+    </div>
+    </div>
+  </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block main_js %}
+<script>
+  var aicode=$("#ai_code_select").select2().on('change', function (e) {
+      var data = $('#ai_code_select').select2('data')
+      var aid=$("#ai_code_select").val().split('###')
+      var str=data[0].text.split('-')
+    $('#ai_name_select').text(str[1]);
+    $('#ai_id_select').text(aid[2]);
+    $('#ai_id_input').val(aid[1]);
+    $('#ai_code_input').val(aid[0]);
+    $('#ai_no_input').val(aid[2]);
+  });
+
+var data = $('#ai_code_select').select2('data')
+var aid=$("#ai_code_select").val().split('###')
+var str=data[0].text.split('-')
+$('#ai_name_select').text(str[1]);
+$('#ai_id_select').text(aid[2]);
+$('#ai_id_input').val(aid[1]);
+$('#ai_code_input').val(aid[0]);
+$('#ai_no_input').val(aid[2]);
+
+ </script>
+{% endblock %}

@@ -1,0 +1,1332 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% block breadcrumb_menu %}
+{% block meta_title %}{% trans "Submission Dashboard" %}{% endblock %}
+<li class="active">{% trans "Submission Dashboard" %}</li>
+{% endblock %}
+{% block main %}
+<script type="text/javascript">
+
+var loadv=0;
+var pg=0;
+var allsubsdt=0;
+
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" />
+
+<div class="row">
+  <div class="col-md-10" >
+    <div class="headertitle" style="backgroud:#FE9E00;border:1px solid #fff;color:#fff">
+            Submission Dashboard
+   </div>
+   </div>
+   <div class="col-md-2" >
+   <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-help"> Help &nbsp;<i class="fa fa-question-circle"> </i> </button>
+   </div>
+</div>
+<div class="col-md-12">
+  <div class="pull-right" style="width:450px">
+      <input type="text" id="search" value="{{search}}" style="width:240px">
+       <button type="button" name="button" class="btn btn-primary" onclick="doSearch()"> GO</button>
+</div>
+</div>
+<div class="col-md-12 mtop">
+
+</div>
+
+<div class="row">
+<div class="col-md-12 mtop2 padding0" >
+
+  <div class="col-md-7" style="width: 55%;">
+
+    <div class="col-md-4 ai_code_selectp ">
+      AI Code
+    </div>
+    <div class="col-md-4 ai_code_selectp" style="padding:0;margin-left:-2.5%;">
+      <select name="ai_code_select" class="form-control" id="ai_code_select" required>
+        <option value="">-- select-- </option>
+        {% for dim in AAIS %}
+        <option value="{{dim.ai_code}}--{{dim.create_dtm.ai_name}}--{{dim.status}}--ai_code" > {{dim.ai_code}}-{{dim.create_dtm.ai_name}} </option>
+        {% endfor %}
+      </select>
+    </div>
+<div class="col-md-12 mtop padding0"> </div>
+    <div class="col-md-4 ai_no_selectp">
+      AI Number
+    </div>
+    <div class="col-md-4 ai_no_selectp" style="padding:0;margin-left:-2.5%;">
+      <select name="ai_no_select" class="form-control" id="ai_no_select" required>
+        <option value="">-- select-- </option>
+        {% for dim in AAISN %}
+        <option value="{{dim.ai_code}}--{{dim.create_dtm.ai_name}}--{{dim.status}}--ai_no" >{{dim.create_dtm.ai_no}} - {{dim.create_dtm.ai_name}}</option>
+        {% endfor %}
+      </select>
+    </div>
+<div class="col-md-12 mtop padding0"> </div>
+  <div class="col-md-4">
+    Submission Date from
+  </div>
+  <div class="col-md-4" style="padding:0;margin-left:-2.5%;">
+    <input type="checkbox" id="cball" style="width:20px;height:20px"> All    &nbsp;
+
+    <input type="text" name="" value="" id="sdf" class="cald">
+    &nbsp;
+    <i class="fa fa-calendar-alt sdf cald" onclick="$('#sdf').datepicker('show');"></i>
+  </div>
+
+  <div class="col-md-3 cald" style="padding:0;width: 34%;">
+    &nbsp;to &nbsp;
+    <input type="text" name="" value="" id="sdt" style="width: 63%" class="cald">
+    &nbsp;
+    <i class="fa fa-calendar-alt sdt cald" onclick="$('#sdt').datepicker('show');"></i>
+  </div>
+
+<div class="col-md-12 mtop padding0"> </div>
+
+    <div class="col-md-4">
+      Return Type
+    </div>
+    <div class="col-md-4" style="padding:0;margin-left:-3%;;">
+      <select name="return" id="return_type" style="height:35px;width:69%;">
+        <option value=''>All</option>
+        <option ='RML'>RML</option>
+        <option ='CL'>CL</option>
+      </select>
+    </div>
+
+    <div class="col-md-3" style="padding:0;width: 34%;" id="pdtp">
+
+
+      <select id="pdt" class="top-date"  name="deadline" style="margin-left: -80px;height: 35px;" >
+        <option value="">--Select Deadline-- </option>
+        {% for a in aisd %}
+        <option value="{{a.deadline|date:'Y-m-d'}}"> {{a.deadline|date:'Y-m-d'}} </option>
+        {% endfor %}
+      </select>
+    </div>
+
+</div>
+
+  <div class="col-md-5" style="width:44%;padding:0;margin-top: -40px;">
+
+<div class="col-md-12 mtop2 padding0"> </div>
+    <div class="col-md-6">
+        Status: <span id="ai_id_act"> </span>
+    </div>
+    <div class="col-md-6">
+      AI Name: <span id="ai_name_"> </span>
+      <input type="hidden" id="ai_code_input">
+    </div>
+<div class="col-md-12 mtop padding0"> </div>
+    <div class="col-md-12 mtop padding0" style="padding:0">
+       <div class="col-md-12 mtop dasbn" style="padding:0">
+
+          <div class="col-md-3 dasbox">
+             <div class="col-md-3">
+                <i class="fas fa-landmark"></i>
+             </div>
+             <div class="col-md-8" >
+                <strong class="total"> {{ais.total}} </strong>
+
+             </div>
+              <div class="col-md-12" style="line-height: 14px;padding-right:0">
+                <p> Total participating AIs </p>
+             </div>
+          </div>
+
+          <div class="col-md-3 dasbox">
+             <div class="col-md-3">
+                <i class="fas fa-landmark"></i>
+             </div>
+             <div class="col-md-8">
+                <strong class="actie"> {{ais.active}} </strong>
+
+             </div>
+               <div class="col-md-12" style="line-height: 14px;padding-right:0">
+             <p> Active in GDR</p>
+               </div>
+          </div>
+
+          <div class="col-md-3 dasbox">
+             <div class="col-md-3 col-sm-3">
+                <i class="fas fa-landmark"></i>
+             </div>
+             <div class="col-md-8 col-sm-8">
+                <strong class="inactive"> {{ais.inactive}} </strong>
+
+             </div>
+              <div class="col-md-12" style="line-height: 14px;padding-right:0">
+             <p> Inactive in GDR</p>
+             </div>
+          </div>
+       </div>
+    </div>
+
+
+    <div class="col-md-12 hideonall" style="padding:0">
+       <div class="col-md-12 mtop dasbn" style="padding:0">
+
+          <div class="col-md-3 dasbox">
+            <div class="col-md-3">
+               <i class="fas fa-file-upload"></i>
+            </div>
+            <div class="col-md-8">
+                <strong class="inactive"> {{d}} </strong>
+            </div>
+              <div class="col-md-12" style="line-height: 14px;padding-right:0">
+                <p> No. of AIs no  submissions </p>
+              </div>
+          </div>
+
+          <div class="col-md-3 dasbox">
+            <div class="col-md-3">
+               <i class="fas fa-file-upload"></i>
+            </div>
+            <div class="col-md-8">
+                <strong class="actie">
+                  {{e}}
+                </strong>
+            </div>
+              <div class="col-md-12" style="line-height: 14px;padding-right:0">
+                <p> No. of AIs submitted  BEFORE deadline</p>
+              </div>
+          </div>
+
+          <div class="col-md-3 dasbox">
+            <div class="col-md-3">
+               <i class="fas fa-file-upload"></i>
+            </div>
+            <div class="col-md-8">
+                <strong class="warn"> {{f}}  </strong>
+            </div>
+            <div class="col-md-12" style="line-height: 14px;padding-right:0">
+            <p>No. of AIs submitted  AFTER deadline</p>
+            </div>
+       </div>
+     </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+
+
+<div class="col-md-12 mtop padding0" style="margin-top:30px;">
+  <div class="col-md-2">
+  </div>
+
+
+  <div class="col-md-2 dasbox totbg">
+      <div class="col-md-12 head">
+        TOTAL
+      </div>
+      <span style="color:#fff;margin-left:20px;">records in Submission Excel</span>
+      <div class="col-md-12 mtop2" style="border:1px solid;width:98%;margin: 8px 0;;"></div>
+      <div class="col-md-12 head">
+        {{total}}
+      </div>
+  </div>
+
+  <div class="col-md-2 dasbox errorbg">
+      <div class="col-md-12 head">
+        ERROR
+        <i class="fa fa-play"> </i>
+        <i class="fa fa-sort-desc" style="font-size:25px"></i>
+      </div>
+      <span style="color:#fff;margin-left:20px;">records in Submission Excel</span>
+      <div class="col-md-12 mtop2" style="border:1px solid;width:98%;margin: 8px 0;;"></div>
+      <div class="col-md-12 head">
+        {{errr}}
+      </div>
+  </div>
+
+  <div class="col-md-2 dasbox warnbg">
+      <div class="col-md-12 head">
+        WARN
+        <i class="fa fa-play"> </i>
+        <i class="fa fa-sort-desc" style="font-size:25px"></i>
+      </div>
+      <span style="color:#fff;margin-left:20px;">records in Submission Excel</span>
+      <div class="col-md-12 mtop2" style="border:1px solid;width:98%;margin: 8px 0;;"></div>
+      <div class="col-md-12 head">
+        {{warn}}
+      </div>
+  </div>
+
+
+  <div class="col-md-2 dasbox goodbg">
+      <div class="col-md-12 head">
+        GOOD
+      </div>
+      <span style="color:#fff;margin-left:20px;">records in Submission Excel</span>
+      <div class="col-md-12 mtop2" style="border:1px solid;width:98%;margin: 8px 0;;"></div>
+      <div class="col-md-12 head">
+        {{good}}
+      </div>
+  </div>
+  <div class="col-md-2 dasbox togdr">
+    <span style="margin-left:20px;">Records in Submission Excel  </span>
+      <div class="col-md-12 head">
+        to GDR
+      </div>
+
+      <div class="col-md-12 mtop2" style="border:1px solid;width:98%;margin: 8px 0;;"></div>
+      <div class="col-md-12 head">
+        {{togdr}}
+      </div>
+  </div>
+
+
+</div>
+
+{% for ai in alais  %}
+<div class="col-md-12 mtop padding0">
+
+  <div class="col-md-2">
+  </div>
+
+  <div class="col-md-2" style="padding-right: 0;padding-left: 0;">
+    <div class="gh">
+      AI no:{{ai.ai_no}}
+  </div>
+  </div>
+
+  <div class="col-md-2" style="padding-right: 0">
+    <div class="gh">
+      AI Code:{{ai.ai_code}}
+
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="gh" style="text-align:left">
+
+    {{ai.ai_name}}
+    </div>
+  </div>
+</div>
+
+{% for aie in ai.email %}
+<div class="col-md-12 mtop add_adding padding0">
+  <div class="col-md-1">
+
+  </div>
+
+  <div class="col-md-1">
+    <i class="fa fa-play l1" style="font-size: 22px;cursor:pointer"
+
+    data-ai_code="{{aie.ai_code}}"
+    data-return_name="{{aie.return_name}}"
+    data-submission_type="{{aie.submission_type}}"
+    data-zip_file_name="{{aie.zip_file_name}}"
+    data-job_uuid="{{aie.job_uuid}}"
+
+    onclick="showDetails(this)"> </i>
+    <i class="fa fa-sort-desc l1x" style="font-size: 40px;cursor:pointer;display:none" onclick="hideDetails(this)"> </i>
+  </div>
+
+
+  <div class="col-md-4" style="padding-right: 0;padding-left: 0;">
+    <div class="col-md-4 cmni ghi">
+      Total Records <br>
+      {{aie.tot_csv_rows}}
+    </div>
+    <div class="col-md-4 cmni btn-danger">
+      Staging Error <br>
+      {{aie.staging_failed}}
+    </div>
+    <div class="col-md-4 cmni btn-info " style="padding-right: 0">
+      Import to Staging <br>
+    {{aie.staging_rows}}
+    </div>
+  </div>
+
+  <div class="col-md-2" style="padding-right: 0;padding-left: 0;" >
+    <div class="col-md-6 cmni btn-warning" style="color:#000;background:#EBE9A3">
+      Staging WARN <br>
+    {{aie.staging_warn}}
+    </div>
+
+    <div class="col-md-6 cmni btn-success" style="color:#000;background:#A6B727">
+      Staging GOOD <br>
+      {{aie.staging_good}}
+    </div>
+
+  </div>
+
+  <div class="col-md-4" style="padding-left: 0">
+    <div class="col-md-4 cmni btn-danger">
+      GDR ERROR  <br>
+      {{aie.staging_error}}
+    </div>
+
+    <div class="col-md-4 cmni btn-warning">
+      GDR WARN <br>
+
+      <span class="gdr_warn">{{aie.gdr_warn}}</span>
+      <span style="display:none" class="gdr_error">{{aie.tot_error}}</span>
+    </div>
+
+    <div class="col-md-4 cmni btn-success">
+      GDR GOOD <br>
+    {{aie.gdr_good}}
+    </div>
+
+  </div>
+
+</div>
+<div class="inner1dash col-md-12" style="display:none">
+{% if aie.details %}
+{% for ae in aie.details %}
+<div class="col-md-12 mtop inner1 padding0">
+  <div class="col-md-1">
+
+  </div>
+
+  <div class="col-md-1">
+    <div class="gh">
+      {% ifequal ae.submission_type "D" %}
+         Delta
+      {%endifequal%}
+
+      {% ifequal ae.submission_type "F" %}
+         Full
+      {%endifequal%}
+
+
+      {% ifequal ae.submission_type "R" %}
+         Regular
+      {%endifequal%}
+
+   </div>
+  </div>
+  <div class="col-md-4" style="padding-left: 0;padding-right: 0;">
+    <div class="gh">
+      Submission File:
+    {{ae.zip_file_name}}
+    </div>
+  </div>
+  <div class="col-md-2" style="padding-right: 0;">
+    <div class="gh">
+    Submission:  {{ae.process_timestamp}}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="gh">
+     Position: {{ae.position_date}}
+     </div>
+  </div>
+</div>
+
+<div class="col-md-12 mtop padding0">
+  <div class="col-md-1">
+
+  </div>
+
+  <div class="col-md-1">
+    <i class="fa fa-play l2" style="font-size: 22px;cursor:pointer"
+
+    data-ai_code='{{ae.ai_code}}'
+    data-page="1"
+    data-job_uuid='{{ae.job_uuid}}'
+    data-position_date='{{ae.position_date|date:"Y-m-d"}}'
+    data-return_name='{{ae.return_name}}'
+    data-submission_type='{{ae.submission_type}}'
+    data-zip_file_name='{{ae.zip_file_name}}'
+    data-block_code='{{ae.block_code}}'
+    data-zip_file_timestamp='{{ae.zip_file_timestamp|date:"Y-m-d H:i:s"}}'
+    onclick="showDetailsmore(this)"> </i>
+    <i class="fa fa-sort-desc" style="font-size: 40px;margin-top: -15px;cursor:pointer;display:none" onclick="hideDetailsmore(this)"> </i>
+  </div>
+
+
+  <div class="col-md-4" style="padding-left: 0;padding-right: 0;">
+    <div class="col-md-4 cmni ghi">
+      {{ae.tot_csv_rows}}
+    </div>
+    <div class="col-md-4 cmni btn-danger">
+      {{ae.staging_failed}}
+    </div>
+    <div class="col-md-4 cmni btn-info " style="padding-right: 0;">
+    {{ae.staging_rows}}
+    </div>
+  </div>
+
+  <div class="col-md-2" style="padding-right: 0;">
+    <div class="col-md-6 cmni btn-warning" style="color:#000;background:#EBE9A3">
+    {{ae.staging_warn}}
+    </div>
+
+    <div class="col-md-6 cmni btn-success" style="color:#000;background:#A6B727">
+      {{ae.staging_good}}
+    </div>
+
+  </div>
+
+  <div class="col-md-4" >
+    <div class="col-md-4 cmni btn-danger">
+      {{ae.staging_error}}
+    </div>
+
+    <div class="col-md-4 cmni btn-warning">
+      <span class="gdr_warn_fl">{{ae.gdr_warn}}</span>
+      <span style="display:none" class="gdr_error_fl">{{ae.tot_error}}</span>
+    </div>
+
+    <div class="col-md-4 cmni btn-success">
+    {{ae.gdr_good}}
+    </div>
+
+  </div>
+
+</div>
+<div style="display:none">
+<div class="col-md-12 padding0 innsererror">
+</div>
+</div>
+
+{% endfor %}
+{% endif %}
+</div>
+{% endfor %}
+{% endfor %}
+
+<div class="col-md-12 mtop2">
+</div>
+
+<div class="col-md-12">
+  <div class="pull-right">
+    {% if page > 1 %}
+    <a href="#" onclick="goPrev();return false;" class="previous btn btn-success">&laquo; Previous</a>
+    {% endif %}
+    {% ifequal lent '10' %}
+    <a href="#" onclick="goNext();return false;" class="next btn btn-success">Next &raquo;</a>
+    {% endifequal %}
+  </div>
+</div>
+
+<div class="col-md-12 mtop2">
+</div>
+
+<div class="modal fade" id="modal-help">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <object  type="application/pdf" data="{% static "pdf/subdashboard.pdf" %}" width="100%" height="500" style="height: 85vh;">
+
+          <a target="_blank" href="{% static "pdf/subdashboard.pdf" %}"> Click here to open </a>
+
+        </object >
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<style media="screen">
+.fa-landmark, .fa-file-upload{
+  font-size:25px;
+}
+
+.dasbox{
+  margin-right: 25px;
+  padding: 5px 8px;
+  border: 2px solid #A4B23D;
+  border-radius:8px;
+  -webkit-box-shadow: 4px 6px 6px 0px rgba(184,184,184,1);
+  -moz-box-shadow: 4px 6px 6px 0px rgba(184,184,184,1);
+  box-shadow: 4px 6px 6px 0px rgba(184,184,184,1);
+}
+
+    @media only screen and (min-width: 1440px) {
+        .dasbn .dasbox{
+          margin-right:5px;
+          width:30%;
+          height: 100px;
+          padding: 22px 15px;
+        }
+    }
+
+
+  input.top-date{
+    color: #fff !important ;
+    background: #938c8c;
+    padding: 10px 15px;
+    height: 50px;
+    font-size: 19px;
+    font-weight: bold;
+  }
+
+.dasbox .actie{
+  color: #74c33c;
+  font-size: 25px;
+  padding-top: 1px;
+    display: inline-block;
+}
+
+.dasbox .total{
+font-size: 25px;
+padding-top: 1px;
+    display: inline-block;
+}
+
+.mtop2{
+  margin-top:30px;
+}
+.dasbox .inactive{
+  color:#e35465;
+  font-size: 25px;
+  padding-top: 1px;
+  display: inline-block;
+}
+
+.dasbox .warn{
+  color:#e8e655;
+  font-size: 25px;
+
+}
+.gh{
+  padding: 2px 10px !important;
+}
+.gh-box{
+  margin-right: 30px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 9px;
+}
+
+.fas-text{
+  font-size: 45px;
+  font-weight: bold;
+  margin-top: 15px;
+  display: block;
+}
+
+.fa-calendar-alt{
+  font-size: 25px;
+  cursor: pointer;
+}
+input {
+    border: 2px solid #A4B23D !important;
+    height: 40px;
+    width: 70%;
+    padding: 5px;
+}
+.head{
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color:#fff;
+}
+
+.togdr .head{
+    color:#000;
+}
+
+
+.dasbox p{
+  width: 100%;
+  display: block;
+  padding: 0;
+  margin: 0;
+  font-size: 11px;
+}
+
+.totbg{
+  background:#000;
+}
+
+.errorbg{
+   background:#B51700;
+}
+
+.warnbg{
+    background:#FE9E00;
+}
+
+.goodbg{
+  background:#3F881A;
+}
+
+.dasbox {
+    width: 14%;
+    margin-right: 25px;
+  }
+
+.cmni, .ghi{
+font-size:14px;
+}
+.padding0 {
+    padding: 0;
+}
+
+select.top-date{
+  color: #fff !important ;
+  background: #938c8c;
+  padding: 2px 25px;
+  height: 40px;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.errorbg-border{
+       border: 5px solid #A4B23D;
+}
+.warnbg-border{
+    border: 5px solid #A4B23D;
+}
+
+@media only screen and (max-width: 1350px) {
+  .dasbn .dasbox{
+    margin-right:5px;
+    width:30%;
+    height: 100px;
+    padding: 12px 18px;
+  }
+
+}
+
+.innsererror{
+  margin-bottom:20px;
+}
+
+.head .fa-sort-desc{
+  display:none
+}
+
+.errorbg-border .fa-sort-desc{
+  display:inline
+}
+
+.warnbg-border .fa-sort-desc{
+  display:inline
+}
+
+.errorbg-border .fa-play{
+  display:none
+}
+
+.warnbg-border .fa-play{
+  display:none
+}
+
+.dasbox span {
+    font-size: 11px;
+    font-weight: bold;
+}
+
+</style>
+<script>
+
+var page=parseInt('{{page}}')
+ allsubsdt='{{allsubsdt}}'
+
+var herror=0
+var hwarning=0
+
+$(function() {
+  $("#sdf" ).datepicker({
+    dateFormat: "yy-mm-dd",
+    beforeShow:function(){
+      loadv=1
+    },
+    onSelect: function() {
+               doSearch()
+      },
+  })
+
+  $("#sdt" ).datepicker({
+    dateFormat: "yy-mm-dd",
+    beforeShow:function(){
+      loadv=1
+    },
+    onSelect: function() {
+               doSearch()
+      },
+  })
+
+
+$(".top-date").change(function(){
+         doSearch()
+
+       })
+
+
+  $("#return_type").val('{{return_type}}')
+
+  $("#sdt").val('{{sdt}}')
+  $("#sdf").val('{{sdf}}')
+  $("#pdt").val('{{pdt}}')
+
+
+
+  $("#ai_code_select").val('{{ai_code}}').trigger('change');
+  $("#ai_no_select").val('{{ai_code}}').trigger('change');
+
+  $("#return_type").change(function(){
+    $("#pdt").val('')
+     doSearch()
+  })
+});
+
+function doSearch(){
+  var sdt=$("#sdt").val()
+  var sdf=$("#sdf").val()
+  var pdt=$("#pdt").val()
+  if(!pdt){
+    pdt=''
+  }
+
+  var return_type=$("#return_type").val()
+
+  if(return_type==''){
+    pdt=''
+  }
+  var ai=$("#ai_code_input").val()
+  var search=$("#search").val()
+     window.location.href='/subdashboard/?sdt='+sdt+'&return_type='+return_type+'&sdf='+sdf+'&pdt='+pdt+'&search='+search+'&ai='+ai+'&page='+page+'&allsubsdt='+allsubsdt
+}
+
+function showDetails(th){
+    loadv=1
+ $(th).hide(0)
+ $(th).next().show(0)
+
+   $(th).parent().parent().next().slideToggle()
+}
+
+function hideDetails(th){
+  loadv=0
+  $(th).hide(0)
+  $(th).prev().show(0)
+  $(th).parent().parent().next().slideToggle()
+
+}
+
+function hideDetailsmore(th){
+  $(th).hide(0)
+  $(th).prev().show(0)
+  $(th).parent().parent().next().hide()
+
+}
+
+
+function showDetailsmore(th){
+  loadv=1
+ $(th).hide(0)
+ $(th).next().show(0)
+$(th).parent().parent().next().show()
+ var ai_code=$(th).data('ai_code')
+ var return_name=$(th).data('return_name')
+ var position_date=$(th).data('position_date')
+ var submission_type=$(th).data('submission_type')
+ var zip_file_name=$(th).data('zip_file_name')
+ var job_uuid=$(th).data('job_uuid')
+ var zip_file_timestamp =$(th).data('zip_file_timestamp')
+ var block_code=$(th).data('block_code')
+ var page=$(th).data('page')
+ var sdt=$("#sdt").val()
+ var sdf=$("#sdf").val()
+ $.ajax({
+     url:'/innersubdashboard/?sdt='+sdt+'&sdf='+sdf+'&ai_code='+ai_code+'&return_name='+return_name+'&position_date='+position_date+'&submission_type='+submission_type+'&zip_file_name='+zip_file_name+'&job_uuid='+job_uuid+'&block_code='+block_code+'&zip_file_timestamp='+zip_file_timestamp+'&page='+page+'&allsubsdt='+allsubsdt+'&herror='+herror+'&hwarning='+hwarning,
+     success:function(data){
+        var jsn= JSON.parse(data);
+        var errHtml="";
+        var erors="";
+        $.each(jsn, function(i, err){
+          erors="";
+          $.each(err.erors, function(i, er){
+           erors = erors+'<div class="row  mtop '+er.result+'"">'+
+'             <div class="col-md-1">'+
+'             </div>'+
+'               <div class="col-md-4 padding0">'+
+'                   <div class="col-md-3 cmni">'+er.event_id+
+'                   </div>'+
+'                   <div class="col-md-9 cmni">'+er.row_key+
+'                   </div>'+
+'               </div>'+
+'               <div class="col-md-3 padding0">'+
+'                   <div class="col-md-8 cmni"  title="'+er.field_label+'">'+er.field_label+
+'                   </div>'+
+'                   <div class="col-md-4 cmni">'+er.validation_rule+
+'                   </div>'+
+'               </div>'+
+'               <div class="col-md-4 padding0">'+
+'                   <div class="col-md-12 cmni" title="'+er.remark+'">'+er.remark+
+'                   </div>'+
+'               </div>'+
+'           </div>';
+         });
+
+            errHtml+='<div class="col-md-12 mtop padding0">';
+  errHtml+='<div class="col-md-1">';
+  errHtml+='</div>';
+  errHtml+=' <div class="col-md-1  padding0 l3"   onclick="showDetailsmorein(this,'+err.erors.length+')">';
+  errHtml+=' <div class="gh">';
+  errHtml+='  <i class="fa fa-play"> </i>';
+  errHtml+='  <i class="fa fa-sort-desc" style="display:none;font-size:20px;margin-top: -10px;"> </i>';
+  errHtml+='  &nbsp';
+  errHtml+=err.block_code;
+  errHtml+=' </div>';
+  errHtml+=' </div>';
+  errHtml+=' <div class="col-md-4" style="padding-left: 0;padding-right: 0;">';
+  errHtml+='   <div class="col-md-4 cmni ghi">';
+  errHtml+=err.tot_csv_rows;
+  errHtml+='  </div>';
+  errHtml+='  <div class="col-md-4 cmni btn-danger">';
+  errHtml+=err.staging_failed;
+  errHtml+='  </div>';
+  errHtml+='  <div class="col-md-4 cmni btn-info " style="padding-right: 0;">';
+  errHtml+=err.staging_rows;
+  errHtml+='  </div>';
+  errHtml+=' </div>';
+  errHtml+=' <div class="col-md-2" style="padding-right: 0;">';
+  errHtml+='   <div class="col-md-6 cmni btn-warning" style="color:#000;background:#EBE9A3">';
+  errHtml+=err.staging_warn;
+  errHtml+='  </div>';
+  errHtml+='  <div class="col-md-6 cmni btn-success" style="color:#000;background:#A6B727">';
+  errHtml+=err.staging_good;
+  errHtml+='  </div>';
+  errHtml+=' </div>';
+  errHtml+=' <div class="col-md-4">';
+  errHtml+='   <div class="col-md-4 cmni btn-danger">';
+  errHtml+=err.staging_error;
+  errHtml+='  </div>';
+  errHtml+='  <div class="col-md-4 cmni btn-warning gdr_warn_bl">';
+  errHtml+=err.gdr_warn;
+  errHtml+='    <span style="display:none" class="gdr_error_bl">'+err.tot_error+'</span>';
+  errHtml+='  </div>';
+  errHtml+='  <div class="col-md-4 cmni btn-success">';
+  errHtml+=err.gdr_good;
+  errHtml+='  </div>';
+  errHtml+=' </div>';
+  errHtml+=' </div>';
+  errHtml+=' <div style="display:none">';
+  errHtml+=' <div class="col-md-12 innsererror-block">';
+  errHtml+=erors;
+  errHtml+=' </div>';
+  errHtml+=' <div style="text-align:right"   data-page="1">';
+  errHtml+='   <button class="btn btn-primary loadmorebtn" style="display:none;cursor:pointer;margin-top: 10px;"';
+  errHtml+='    data-ai_code="'+err.ai_code+'"';
+  errHtml+='   data-job_uuid="'+err.job_uuid+'"';
+  errHtml+='   data-position_date="'+err.position_date+'"';
+  errHtml+='   data-return_name="'+err.return_name+'"';
+  errHtml+='   data-submission_type="'+err.submission_type+'"';
+  errHtml+='   data-zip_file_name="'+err.zip_file_name+'"';
+  errHtml+='   data-block_code="'+err.block_code+'"';
+  errHtml+='   data-zip_file_timestamp="'+err.zip_file_timestamp+'"';
+  errHtml+='   onclick="showDetailsmorepageprev(this)"> Prev </button>';
+  errHtml+='  <button class="btn btn-primary loadmorebtnnext" style="display:none;cursor:pointer;margin-top: 10px;"';
+  errHtml+='  data-ai_code="'+err.ai_code+'"';
+  errHtml+='  data-job_uuid="'+err.job_uuid+'"';
+  errHtml+='  data-position_date="'+err.position_date+'"';
+  errHtml+='  data-return_name="'+err.return_name+'"';
+  errHtml+=' data-submission_type="'+err.submission_type+'"';
+  errHtml+='  data-zip_file_name="'+err.zip_file_name+'"';
+  errHtml+='  data-block_code="'+err.block_code+'"';
+  errHtml+='  data-zip_file_timestamp="'+err.zip_file_timestamp+'"';
+  errHtml+='   onclick="showDetailsmorepagenext(this)"> Next </button>';
+  errHtml+=' </div>';
+  errHtml+='  </div>';
+
+       })
+       $(th).parent().parent().next().find('.innsererror').html(errHtml)
+
+       $(th).parent().parent().next().find(".l3").each(function(){
+         if(hwarning==1){
+           var tx=$(this).parent().find('.gdr_error_bl').text()
+           var ln=parseInt(tx)
+           console.log('LNEE=='+ln)
+           if(ln>0){
+             $(this).addClass('clicked')
+             $(this)[0].click()
+             //$(".mtop.E").show()
+             //$(".mtop.W").hide()
+           }
+         }
+
+         if(herror==1){
+           var tx=$(this).parent().find('.gdr_warn_bl').text()
+           var ln=parseInt(tx)
+           console.log('LNWW=='+ln)
+           if(ln>0){
+             $(this).addClass('clicked')
+               $(this)[0].click()
+               //$(".mtop.E").hide()
+               //$(".mtop.W").show()
+           }
+         }
+
+       })
+
+     }
+ })
+
+}
+
+
+function showDetailsmorein(th,ln){
+    console.log('paginations showw=='+ln)
+  $(th).parent().next().toggle();
+  $(th).find('.fa-sort-desc').toggle();
+  $(th).find('.fa-play').toggle();
+
+    $(th).parent().next().find('.loadmorebtn').hide()
+    $(th).parent().next().find('.loadmorebtnnext').hide()
+    $(th).parent().next().find('.loadmorebtn-text').show()
+   if(ln>19){
+      console.log('paginations showw')
+      $(th).parent().next().find('.loadmorebtnnext').show()
+  }
+}
+
+function showDetailsmorepagenext(th){
+  loadv=1
+
+ var ai_code=$(th).data('ai_code')
+ var return_name=$(th).data('return_name')
+ var position_date=$(th).data('position_date')
+ var submission_type=$(th).data('submission_type')
+ var zip_file_name=$(th).data('zip_file_name')
+ var job_uuid=$(th).data('job_uuid')
+ var zip_file_timestamp =$(th).data('zip_file_timestamp')
+ var block_code=$(th).data('block_code')
+ var page=parseInt($(th).parent().data('page'))+1;
+ $(th).parent().data('page',page)
+
+$(th).parent().find('.loadmorebtn').show()
+ $.ajax({
+     url:'/subdashprevnext/?ai_code='+ai_code+'&return_name='+return_name+'&position_date='+position_date+'&submission_type='+submission_type+'&zip_file_name='+zip_file_name+'&job_uuid='+job_uuid+'&block_code='+block_code+'&zip_file_timestamp='+zip_file_timestamp+'&page='+page+'&herror='+herror+'&hwarning='+hwarning,
+     success:function(data){
+        var jsn= JSON.parse(data);
+        var errHtml="";
+        if(jsn.length ==0){
+          $(th).hide();
+          var page=parseInt($(th).parent().data('page'))-1;
+          $(th).parent().data('page',page)
+          bootbox.alert('No more records found')
+         return false;
+        }
+
+        $.each(jsn, function(i, err){
+
+                    errHtml = errHtml+'<div class="row  mtop '+err.result+'"">'+
+'             <div class="col-md-1">'+
+'             </div>'+
+'               <div class="col-md-4 padding0">'+
+'                   <div class="col-md-3 cmni">'+err.event_id+
+'                   </div>'+
+'                   <div class="col-md-9 cmni">'+err.row_key+
+'                   </div>'+
+'               </div>'+
+'               <div class="col-md-3 padding0">'+
+'                   <div class="col-md-8 cmni"  title="'+err.field_label+'">'+err.field_label+
+'                   </div>'+
+'                   <div class="col-md-4 cmni">'+err.validation_rule+
+'                   </div>'+
+'               </div>'+
+'               <div class="col-md-4 padding0">'+
+'                   <div class="col-md-12 cmni" title="'+err.remark+'">'+err.remark+
+'                   </div>'+
+'               </div>'+
+'           </div>';
+       })
+
+       $(th).parent().prev().html(errHtml)
+     }
+ })
+
+}
+
+
+
+
+function showDetailsmorepageprev(th){
+  loadv=1
+
+ var ai_code=$(th).data('ai_code')
+ var return_name=$(th).data('return_name')
+ var position_date=$(th).data('position_date')
+ var submission_type=$(th).data('submission_type')
+ var zip_file_name=$(th).data('zip_file_name')
+ var job_uuid=$(th).data('job_uuid')
+ var zip_file_timestamp =$(th).data('zip_file_timestamp')
+ var block_code=$(th).data('block_code')
+ var page=parseInt($(th).parent().data('page'))-1;
+ $(th).parent().data('page',page)
+
+
+ $.ajax({
+     url:'/subdashprevnext/?ai_code='+ai_code+'&return_name='+return_name+'&position_date='+position_date+'&submission_type='+submission_type+'&zip_file_name='+zip_file_name+'&job_uuid='+job_uuid+'&block_code='+block_code+'&zip_file_timestamp='+zip_file_timestamp+'&page='+page+'&herror='+herror+'&hwarning='+hwarning,
+     success:function(data){
+        var jsn= JSON.parse(data);
+        var errHtml="";
+
+        if(page ==1){
+          $(th).hide();
+        }
+        $(th).parent().find('.loadmorebtnnext').show()
+        $.each(jsn, function(i, err){
+
+                    errHtml = errHtml+'<div class="row  mtop '+err.result+'"">'+
+'             <div class="col-md-1">'+
+'             </div>'+
+'               <div class="col-md-4 padding0">'+
+'                   <div class="col-md-3 cmni">'+err.event_id+
+'                   </div>'+
+'                   <div class="col-md-9 cmni">'+err.row_key+
+'                   </div>'+
+'               </div>'+
+'               <div class="col-md-3 padding0">'+
+'                   <div class="col-md-8 cmni"  title="'+err.field_label+'">'+err.field_label+
+'                   </div>'+
+'                   <div class="col-md-4 cmni">'+err.validation_rule+
+'                   </div>'+
+'               </div>'+
+'               <div class="col-md-4 padding0">'+
+'                   <div class="col-md-12 cmni" title="'+err.remark+'">'+err.remark+
+'                   </div>'+
+'               </div>'+
+'           </div>';
+
+       })
+
+       $(th).parent().prev().html(errHtml)
+     }
+ })
+
+}
+
+</script>
+
+<script>
+
+ var v='{{ai_code}}'
+  var aid=v.split('--')
+  $('#ai_name_').text(aid[1]);
+  if(aid[2]=='True'){
+    $('#ai_id_act').text('Active in GDR');
+  }else{
+    $('#ai_id_act').text('Inactive in GDR');
+  }
+
+  $('#ai_code_input').val(v);
+
+var aicode=$("#ai_code_select").select2().on('select2:select', function (e) {
+    var data = $('#ai_code_select').select2('data')
+    var aid=$("#ai_code_select").val().split('--')
+    $('#ai_name_').text(aid[1]);
+
+    if(aid[2]=='True'){
+      $('#ai_id_act').text('Active in GDR');
+    }else{
+      $('#ai_id_act').text('Inactive in GDR');
+    }
+
+    $('#ai_code_input').val($("#ai_code_select").val());
+    //if($("#ai_code_select").val()!='{{ai_code}}')
+     doSearch()
+});
+
+
+var aino=$("#ai_no_select").select2().on('select2:select', function (e) {
+    var data = $('#ai_no_select').select2('data')
+    var aid=$("#ai_no_select").val().split('--')
+
+  $('#ai_name_').text(aid[1]);
+
+  if(aid[2]=='True'){
+    $('#ai_id_act').text('Active in GDR');
+  }else{
+    $('#ai_id_act').text('Inactive in GDR');
+  }
+
+
+  $('#ai_code_input').val($("#ai_no_select").val());
+
+  //if($("#ai_no_select").val()!='{{ai_code}}')
+   doSearch()
+});
+
+function goPrev(){
+  page=page-1
+  doSearch()
+}
+
+function goNext(){
+    page=page+1
+    doSearch()
+}
+
+
+function loadmerror(){
+  pg++
+
+}
+
+function loadprev(){
+  pg--
+
+}
+
+setInterval(function(){
+  if(loadv==0){
+  //window.location.reload();
+  }
+},11000)
+
+$(document).ready(function(){
+  if($('#return_type').val()==''){
+    $("#pdtp").html('')
+    $(".hideonall").hide();
+  }
+
+  if($('#pdt').val()==''){
+    $(".hideonall").hide();
+  }
+
+  if($('#ai_no_select').val()==''){
+    $(".ai_code_selectp").show();
+  }else{
+    $(".ai_code_selectp").hide();
+  }
+
+  if($('#ai_code_select').val()==''){
+    $(".ai_no_selectp").show();
+  }else{
+    $(".ai_no_selectp").hide();
+  }
+
+})
+
+$(function(){
+$(".warnbg").click(function(){
+  if($(this).hasClass('warnbg-border')){
+    loadv=0
+    $(".l1x").each(function(){
+      $(this).click()
+    })
+    $(".mtop.E").show()
+     herror=0
+    var th=this
+    setTimeout(function(){
+      $(th).removeClass('warnbg-border')
+    },200)
+    return false;
+  }
+
+  $(".mtop.E").hide()
+  $(".mtop.W").show()
+  herror=1
+  hwarning=0
+  loadv=1
+  $(".l1").each(function(){
+       var tx=$(this).parent().parent().find('.gdr_warn').text()
+       var ln=parseInt(tx)
+       if(ln>0){
+         $(this).click()
+       }
+
+     $(".l2").each(function(){
+       var tx=$(this).parent().parent().find('.gdr_warn_fl').text()
+       var ln=parseInt(tx)
+       if(ln>0){
+         $(this).click()
+       }
+
+       $(".l3").each(function(){
+         var tx=$(this).parent().find('.gdr_warn_bl').text()
+         var ln=parseInt(tx)
+         console.log('LN=='+ln)
+         if(ln>0){
+           $(this).addClass('clicked')
+           $(this).click()
+         }
+       })
+
+
+     })
+
+  })
+
+
+    $(".errorbg").removeClass('errorbg-border')
+    var th=this
+    setTimeout(function(){
+      $(th).addClass('warnbg-border')
+    },200)
+
+})
+
+$(".errorbg").click(function(){
+  if($(this).hasClass('errorbg-border')){
+    $(".l1x").each(function(){
+      $(this).click()
+    })
+      var th=this
+      loadv=0
+      $(".mtop.W").show()
+      hwarning=0
+      setTimeout(function(){
+        $(th).removeClass('errorbg-border')
+      },200)
+      return false;
+  }
+
+
+    $(".mtop.E").show()
+    $(".mtop.W").hide()
+    herror=0
+    hwarning=1
+    loadv=1
+
+    $(".l1").each(function(){
+         var tx=$(this).parent().parent().find('.gdr_error').text()
+         var ln=parseInt(tx)
+         if(ln>0){
+           $(this).click()
+         }
+
+       $(".l2").each(function(){
+         var tx=$(this).parent().parent().find('.gdr_error_fl').text()
+         var ln=parseInt(tx)
+         if(ln>0){
+           $(this).click()
+         }
+
+       })
+
+    })
+
+   $(".warnbg").removeClass('warnbg-border')
+   var th=this
+   setTimeout(function(){
+        $(th).addClass('errorbg-border')
+   },200)
+})
+
+})
+
+$("#cball").click(function(){
+  if(this.checked){
+    $(".cald").hide()
+   allsubsdt=1
+ }else{
+   allsubsdt=0
+   $(".cald").show()
+ }
+ doSearch()
+
+})
+
+if(allsubsdt==1){
+  $("#cball").prop("checked",true);
+  $(".cald").hide()
+}
+</script>
+{% endblock %}
